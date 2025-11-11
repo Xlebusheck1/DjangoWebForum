@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}DevGuru - Settings{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/settings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="left-column">
+    <div class="settings">
+        <h2 class="settings__title">Settings: user</h2>
+        <form class="settings__form">
+            <div class="form-group">
+                <label for="settings-login" class="form-label">Login</label>
+                <input type="text" id="settings-login" class="form-input" value="current_user" placeholder="Введите ваш логин">
+            </div>
+            <div class="form-group">
+                <label for="settings-email" class="form-label">Email</label>
+                <input type="email" id="settings-email" class="form-input" value="user@example.com" placeholder="Введите ваш email">
+            </div>
+            <div class="form-group">
+                <label for="settings-nick" class="form-label">Nick</label>
+                <input type="text" id="settings-nick" class="form-input" value="CoolDeveloper" placeholder="Введите ваш ник">
+            </div>
+            <div class="form-group">
+                <label for="settings-avatar" class="form-label">Avatar</label>
+                <div class="settings__avatar-preview">
+                    <div class="settings__avatar-image">
+                        <img src="#" class="settings__current-avatar">
+                    </div>
+                    <input type="file" id="settings-avatar" class="form-file" accept="image/*">
+                </div>
+            </div>
+            <button type="submit" class="btn">Save</button>
+        </form>
+    </div>
+</div>
+
+<div class="right-column">
+    {% include 'sidebar.html' %}
+</div>
+{% endblock %}

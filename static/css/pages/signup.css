@@ -1,0 +1,22 @@
+.registration {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 40px;
+    margin: 30px auto;
+    max-width: 500px;
+    width: 100%;
+}
+
+.registration__title {
+    color: #081924;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.registration__form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}

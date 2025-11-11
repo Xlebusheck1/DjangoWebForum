@@ -1,0 +1,87 @@
+.header {
+    background: #44869ea2;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.header__logo {
+    color: #081924;
+    font-size: 1.5rem;
+    white-space: nowrap;
+    margin-right: auto;
+    cursor: pointer;
+}
+
+.header__search-form {
+    display: flex;
+    gap: 5px;
+    flex: 1;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.header__search-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex: 1;
+    min-width: 150px;
+}
+
+.header__ask-btn {
+    padding: 8px 20px;
+    background: #081924;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.header__ask-btn:hover {
+    background: #5b7286;
+}
+
+.header__user-menu {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.header__user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.header__user-name {
+    font-weight: bold;
+    color: #081924;
+    white-space: nowrap;
+}
+
+.header__user-link {
+    color: #081924;
+    text-decoration: none;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+.header__divider {
+    border: none;
+    height: 1px;
+    background-color: #081924;
+    margin: 0;
+}

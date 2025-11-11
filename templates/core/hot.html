@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}DevGuru - Лучшие вопросы{% endblock %}
+
+{% block content %}
+<div class="left-column">
+    <h2>Лучшие вопросы</h2>
+    
+    {% for question in questions %}
+    <div class="question">
+        <div class="question__avatar">
+            <img src="#">
+        </div>
+        <div class="question__content">
+            <a href="{% url 'question' question.id %}" class="question__title">{{ question.title }}</a>
+            <p class="question__description">{{ question.detailed }}</p>
+            <div class="question__meta">
+                <div class="question__tags">
+                    {% for tag in question.tags.all %}
+                    <a href="{% url 'tag' tag.title %}" class="tag">{{ tag.title }}</a>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'question' question.id %}" class="question__answers-link">Ответы ({{ question.id }})</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% include 'pagination.html' with page=questions %}
+</div>
+
+<div class="right-column">
+    {% include 'sidebar.html' %}
+</div>
+{% endblock %}

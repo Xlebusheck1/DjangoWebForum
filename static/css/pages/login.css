@@ -1,0 +1,35 @@
+.login {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 40px;
+    margin: 50px auto;
+    max-width: 400px;
+    width: 100%;
+}
+
+.login__title {
+    color: #081924;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.login__form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.login__register-link {
+    color: #326183;
+    text-decoration: none;
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+.login__register-link:hover {
+    color: #081924;
+    text-decoration: underline;
+}
