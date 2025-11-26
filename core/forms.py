@@ -42,11 +42,10 @@ class QuestionForm(forms.Form):
     )
     detailed = forms.CharField(
         label='Описание вопроса',
-        widget=forms.TextInput(attrs={'class': 'form-textarea'})
+        widget=forms.Textarea(attrs={'class': 'form-textarea'})
     )
-    tags = forms.ModelMultipleChoiceField(
-        queryset=Tag.objects.all(),
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'ask-tag'}),
+    tags = forms.CharField(
+        label='Теги',
         required=False,
-        label='Теги'
+        widget=forms.HiddenInput() 
     )

@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/pages/ask.css' %}">
 {% endblock %}
+
 {% block title %}DevGuru - Новый вопрос{% endblock %}
 
 {% block content %}
@@ -23,6 +25,7 @@
                 </div>
                 {% endif %}
             </div>
+
             <div class="ask-formgroup">
                 <label for="{{ form.detailed.id_for_label }}" class="ask-label">Описание вопроса</label>
                 {{ form.detailed }}
@@ -34,20 +37,16 @@
                 </div>
                 {% endif %}
             </div>
-            
+
             <div class="ask-formgroup">
                 <label class="ask-label">Теги</label>
                 <input type="text" id="ask-tagsearch" class="ask-input" placeholder="Начните набирать для поиска...">
-                <div id="ask-tagchoices">
-                    {{ form.tags }}
-                </div>
-                {% if form.tags.errors %}
-                <div class="ask-error">
-                    {% for error in form.tags.errors %}
-                        {{ error }}
+                <div id="ask-tagchoices" class="ask-tagscontainer">
+                    {% for tag in tags %}
+                    <div class="ask-tag" data-tag-id="{{ tag.id }}" tabindex="0">{{ tag.name }}</div>
                     {% endfor %}
                 </div>
-                {% endif %}
+                <input type="hidden" name="tags" id="id_tags">
             </div>
 
             <button type="submit" class="ask-btn-submit">ASK</button>

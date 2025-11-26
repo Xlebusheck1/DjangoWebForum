@@ -163,14 +163,23 @@ class AskView(TemplateView):
     
     def post(self, request, *args, **kwargs):
         form = QuestionForm(request.POST)
-        if form.is_valid():
-            question = form.save(commit=False)
-            question.author = request.user
-            question.save()
+        if form.is_valid():           
+            title = form.cleaned_data['title']
+            detailed = form.cleaned_data['detailed']
+          
+            question = Question.objects.create(
+                title=title,
+                detailed=detailed,
+                author=request.user
+            )
+           
+            tag_ids = request.POST.get('tags', '')
+            tag_ids = [int(t) for t in tag_ids.split(',') if t.isdigit()]
+            question.tags.set(tag_ids)  
             return redirect('index')
         
-        return render(request, template_name='core/ask.html', context={'form': form})
-
+        return render(request, self.template_name, {'form': form, 'tags': Tag.objects.all()})
+    
 class SettingsView(TemplateView):
     template_name = 'core/settings.html'
     

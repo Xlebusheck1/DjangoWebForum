@@ -112,36 +112,28 @@
     background-color: #285a72;
 }
 
-#ask-tagchoices ul {
+#ask-tagchoices {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    padding: 0;
-    margin: 0;
-    list-style: none;
+    margin-top: 8px;
 }
-#ask-tagchoices li {
-    margin: 0;
-    padding: 0;
-}
+
 .ask-tag {
+    padding: 5px 14px;
     background: #e9ecef;
     color: #081924;
-    padding: 5px 10px;
     border-radius: 15px;
-    font-size: 0.85rem;
     cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-    display: inline-block;
+    user-select: none;
+    transition: background-color 0.2s, color 0.2s;
 }
+
 .ask-tag:hover {
     background: #c5c5c5;
 }
-.ask-tag input[type="checkbox"] {
-    display: none;
-}
 
-.ask-tag input[type="checkbox"]:checked + span {
+.ask-tag.selected {
     background: #326183;
-    color: #fff;
+    color: white;
 }
