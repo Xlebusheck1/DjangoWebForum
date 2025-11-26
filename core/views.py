@@ -6,7 +6,7 @@ from core.models import Question, Tag
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
-from core.forms import LoginForm, QuestionForm
+from core.forms import LoginForm, QuestionForm, SignupForm
 from django.contrib.auth import login, logout
 from django.contrib import messages
 
@@ -127,21 +127,6 @@ class QuestionView(TemplateView):
         return context
     
 
-class SignupView(TemplateView):
-    template_name = 'core/signup.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        is_authenticated = self.request.user.is_authenticated
-        username = self.request.user.username if is_authenticated else ''
-        context.update({
-            'is_authenticated': is_authenticated,
-            'username': username,
-            'popular_tags': get_popular_tags()
-        })
-        return context
-
-
 @method_decorator(login_required, name='dispatch')
 class AskView(TemplateView):
     http_method_names = ['get', 'post']
@@ -180,6 +165,7 @@ class AskView(TemplateView):
         
         return render(request, self.template_name, {'form': form, 'tags': Tag.objects.all()})
     
+
 class SettingsView(TemplateView):
     template_name = 'core/settings.html'
     
@@ -199,6 +185,7 @@ class SettingsView(TemplateView):
             'popular_tags': get_popular_tags()
         })
         return context
+
 
 class AuthView(TemplateView):
     http_method_names = ['get', 'post']
@@ -224,6 +211,27 @@ def logout_view(request):
     if request.method == 'POST':
         logout(request)
         return redirect('/')
+
+
+class SignupView(TemplateView):
+    http_method_names = ['get', 'post']
+    template_name = 'core/signup.html'
+
+    def get_context_data(self, **kwargs):
+        form = SignupForm()
+        context = super(SignupView, self).get_context_data(**kwargs)
+        context['form'] = form
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.add_message(request, messages.SUCCESS , "Успешная регистрация")
+            return redirect('/')
+        
+        return render(request, template_name='core/signup.html', context={'form': form})
 
 
 def like_question(request, question_id):

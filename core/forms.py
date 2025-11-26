@@ -1,7 +1,9 @@
 from django import forms
-from django.forms.widgets import PasswordInput, TextInput
+from django.forms.widgets import PasswordInput, TextInput, EmailInput
 from django.contrib.auth import authenticate
-from core.models import Question, Tag
+from core.models import Question, Tag, User
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 
 class LoginForm(forms.Form):
@@ -30,10 +32,81 @@ class LoginForm(forms.Form):
         if username and password:
             self.user = authenticate(username=username, password=password)
             if self.user is None:
-                raise forms.ValidationError('Неверное имя пользователя или пароль')           
+                raise ValidationError('Неверное имя пользователя или пароль')           
 
         return cleaned_data
         
+
+class SignupForm(forms.ModelForm):
+    password1 = forms.CharField(
+        max_length=120,
+        widget=PasswordInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Пароль',
+            'autocomplete': 'new-password',
+        }),
+        label='Пароль'
+    )
+    password2 = forms.CharField(
+        max_length=120,
+        widget=PasswordInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Повторите пароль',
+            'autocomplete': 'new-password',
+        }),
+        label='Повторите пароль'
+    )
+
+    class Meta:
+        model = User
+        fields = ('username', 'email')
+        widgets = {
+            'username': TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Имя пользователя',
+                'autocomplete': 'username',
+            }),
+             'email': EmailInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Email',
+                'autocomplete': 'email',
+            }),
+        }
+        labels = {
+            'username': 'Имя пользователя',
+            'email': 'Email',
+        }
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        if not password1 or not password2:
+            raise ValidationError('Введите пароль дважды')
+        if password1 != password2:
+            raise ValidationError('Пароли не совпадают')
+        validate_password(password2)
+
+        return password2
+    
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise ValidationError('Пользователь с таким именем уже существует')
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and User.objects.filter(email=email).exists():
+            raise ValidationError('Пользователь с таким email уже существует')
+        return email
+        
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        password = self.cleaned_data['password1']
+        user.set_password(password) 
+        if commit:
+            user.save()
+        return user
 
 class QuestionForm(forms.Form):
     title = forms.CharField(
