@@ -196,7 +196,13 @@ class AuthView(TemplateView):
         return context
     
     def post(self, request, *args, **kwargs):
-        ...
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            return redirect('/')
+        
+        return render(request, template_name='core/auth.html', context={
+            'form': form
+        })
     
 
 
