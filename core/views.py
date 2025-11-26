@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from core.forms import LoginForm
 from django.contrib.auth import login, logout
+from django.contrib import messages
 
 def paginate(objects_list, request, per_page=10):
     paginator = Paginator(objects_list, per_page)
@@ -193,13 +194,14 @@ class AuthView(TemplateView):
         form = LoginForm(request.POST)
         if form.is_valid():
             login(request, form.user)
+            messages.add_message(request, messages.SUCCESS , "Успешная авторизация")
             return redirect('/')
         
         return render(request, template_name='core/auth.html', context={
             'form': form
         })
 
-@method_decorator(login_required)
+@login_required()
 def logout_view(request):
     if request.method == 'POST':
         logout(request)
