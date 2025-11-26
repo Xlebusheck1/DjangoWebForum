@@ -10,11 +10,13 @@ class DefaultModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Время создания", null=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Время обновления", null=True, editable=False)
 
+
 class User(AbstractUser):
     avatar = models.ImageField(upload_to='avatars', null=True, blank=True)
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
 
 class Question(DefaultModel):
     class Meta:

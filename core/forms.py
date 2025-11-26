@@ -1,6 +1,8 @@
 from django import forms
 from django.forms.widgets import PasswordInput, TextInput
 from django.contrib.auth import authenticate
+from core.models import Question
+
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -32,3 +34,12 @@ class LoginForm(forms.Form):
 
         return cleaned_data
         
+
+class QuestionForm(forms.ModelForm):
+    class Meta:
+        model = Question
+        fields = {
+            'title', 
+            'detailed',
+            'tags'
+        }

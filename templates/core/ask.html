@@ -10,36 +10,37 @@
 <div class="left-column">
     <div class="new-question">
         <h2 class="new-question__title">New Question</h2>
-        <form class="new-question__form">
+        <form method="POST" class="new-question__form">
+            {% csrf_token %}
+
             <div class="form-group">
-                <label for="question-title" class="form-label">Question Title</label>
-                <input type="text" id="question-title" class="form-input" placeholder="Введите заголовок вопроса">
-            </div>
-            <div class="form-group">
-                <label for="question-content" class="form-label">Question Content</label>
-                <textarea id="question-content" class="form-textarea" placeholder="Опишите ваш вопрос подробно..." rows="10"></textarea>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Select Tags</label>
-                <div class="tags-selection">
-                    <div class="tag-option">
-                        <input type="checkbox" id="tag-js" name="tags" value="JavaScript">
-                        <label for="tag-js" class="tag-label">JavaScript</label>
-                    </div>
-                    <div class="tag-option">
-                        <input type="checkbox" id="tag-python" name="tags" value="Python">
-                        <label for="tag-python" class="tag-label">Python</label>
-                    </div>
-                    <div class="tag-option">
-                        <input type="checkbox" id="tag-css" name="tags" value="CSS">
-                        <label for="tag-css" class="tag-label">CSS</label>
-                    </div>
+                <label for={{ form.title.id_for_label }}>Заголовок вопроса</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <div style="color: red; font-size: 0.875rem;">
+                    {% for error in form.title.errors %}
+                        {{ error }}
+                    {% endfor %}
                 </div>
+                {% endif %}
             </div>
+
+            <div class="form-group">
+                <label for={{ form.title.id_for_label }}>Описание вопроса</label>
+                {{ form.detailed }}
+                {% if form.detailed.errors %}
+                <div style="color: red; font-size: 0.875rem;">
+                    {% for error in form.detailed.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
             <button type="submit" class="btn btn--submit">ASK</button>
+            
         </form>
     </div>
 </div>
-
 <div class="right-column"></div>
 {% endblock %}

@@ -6,7 +6,7 @@ from core.models import Question, Tag
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
-from core.forms import LoginForm
+from core.forms import LoginForm, QuestionForm
 from django.contrib.auth import login, logout
 from django.contrib import messages
 
@@ -139,7 +139,10 @@ class SignupView(TemplateView):
         })
         return context
 
+
+@method_decorator(login_required, name='dispatch')
 class AskView(TemplateView):
+    http_method_names = ['get', 'post']
     template_name = 'core/ask.html'
     
     def dispatch(self, request, *args, **kwargs):
@@ -152,13 +155,18 @@ class AskView(TemplateView):
         context = super().get_context_data(**kwargs)
         is_authenticated = self.request.user.is_authenticated
         username = self.request.user.username if is_authenticated else ''    
-        
-        context.update({
-            'is_authenticated': is_authenticated,
-            'username': username,
-            'popular_tags': get_popular_tags()
-        })
+        context['form'] = QuestionForm()        
         return context
+    
+    def post(self, request, *args, **kwargs):
+        form = QuestionForm(request.POST)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.author = request.user
+            question.save()
+            return redirect('index')
+        
+        return render(request, template_name='core/ask.html', context={'form': form})
 
 class SettingsView(TemplateView):
     template_name = 'core/settings.html'
@@ -197,9 +205,7 @@ class AuthView(TemplateView):
             messages.add_message(request, messages.SUCCESS , "Успешная авторизация")
             return redirect('/')
         
-        return render(request, template_name='core/auth.html', context={
-            'form': form
-        })
+        return render(request, template_name='core/auth.html', context={'form': form})
 
 @login_required()
 def logout_view(request):
