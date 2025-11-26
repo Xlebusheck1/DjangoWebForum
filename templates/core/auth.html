@@ -10,7 +10,7 @@
 <div class="left-column">
     <div class="login">        
 
-        <form class="login__form" method="post" action="{% url 'process_login' %}">
+        <form class="login__form" method="post" action="{% url 'login' %}">
             {% csrf_token %}       
             
             {% if form.non_field_errors %}

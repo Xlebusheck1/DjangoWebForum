@@ -21,7 +21,7 @@
             <input type="text" class="header__search-input" placeholder="Поиск по сайту...">
         </form>
         
-        {% if is_authenticated %}
+        {% if user.is_authenticated %}
             <button class="header__ask-btn" onclick="location.href='{% url 'ask' %}'">ASK</button>
             <div class="header__user-menu">
                 <img src="#" alt="Аватар" class="header__user-avatar">
