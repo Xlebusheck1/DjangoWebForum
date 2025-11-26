@@ -198,10 +198,12 @@ class AuthView(TemplateView):
         return render(request, template_name='core/auth.html', context={
             'form': form
         })
-    
+
+@method_decorator(login_required)
 def logout_view(request):
-    logout(request)
-    return redirect('index')
+    if request.method == 'POST':
+        logout(request)
+        return redirect('/')
 
 
 def like_question(request, question_id):
