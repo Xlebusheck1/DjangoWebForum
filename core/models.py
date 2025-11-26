@@ -52,15 +52,16 @@ class Answer(DefaultModel):
     def likes_count(self):
         return self.likes.count()
 
+
 class Tag(models.Model):
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
-    title = models.CharField(max_length=200, verbose_name="Название тега")
+    name = models.CharField(max_length=200, verbose_name="Название тега")
 
     def __str__(self):
-        return self.title
+        return self.name
 
 class QuestionLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

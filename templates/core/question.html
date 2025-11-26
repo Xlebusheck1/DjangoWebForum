@@ -21,7 +21,7 @@
             <div class="question-full__meta">
                 <div class="question-full__tags">
                     {% for tag in question.tags.all %}
-                    <a href="{% url 'tag' tag.title %}" class="tag">{{ tag.title }}</a>
+                    <a href="{% url 'tag' tag.name %}" class="tag">{{ tag.name }}</a>
                     {% endfor %}
                 </div>
                 <div class="question-full__stats">

@@ -51,6 +51,7 @@ class IndexView(TemplateView):
         })
         return context
 
+
 class HotView(TemplateView):
     template_name = 'core/index.html'
     
@@ -73,6 +74,7 @@ class HotView(TemplateView):
             'popular_tags': get_popular_tags()
         })
         return context
+
 
 class TagView(TemplateView):
     template_name = 'core/tag.html'
@@ -156,6 +158,7 @@ class AskView(TemplateView):
         is_authenticated = self.request.user.is_authenticated
         username = self.request.user.username if is_authenticated else ''    
         context['form'] = QuestionForm()        
+        context['tags'] = Tag.objects.all()
         return context
     
     def post(self, request, *args, **kwargs):

@@ -1,46 +1,59 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/pages/ask.css' %}">
 {% endblock %}
 {% block title %}DevGuru - Новый вопрос{% endblock %}
 
 {% block content %}
-<div class="left-column">
-    <div class="new-question">
-        <h2 class="new-question__title">New Question</h2>
-        <form method="POST" class="new-question__form">
+<div class="ask-left">
+    <div class="ask-mainblock">
+        <h2 class="ask-title">New Question</h2>
+        <form method="POST" class="ask-form">
             {% csrf_token %}
 
-            <div class="form-group">
-                <label for={{ form.title.id_for_label }}>Заголовок вопроса</label>
+            <div class="ask-formgroup">
+                <label for="{{ form.title.id_for_label }}" class="ask-label">Заголовок вопроса</label>
                 {{ form.title }}
                 {% if form.title.errors %}
-                <div style="color: red; font-size: 0.875rem;">
+                <div class="ask-error">
                     {% for error in form.title.errors %}
                         {{ error }}
                     {% endfor %}
                 </div>
                 {% endif %}
             </div>
-
-            <div class="form-group">
-                <label for={{ form.title.id_for_label }}>Описание вопроса</label>
+            <div class="ask-formgroup">
+                <label for="{{ form.detailed.id_for_label }}" class="ask-label">Описание вопроса</label>
                 {{ form.detailed }}
                 {% if form.detailed.errors %}
-                <div style="color: red; font-size: 0.875rem;">
+                <div class="ask-error">
                     {% for error in form.detailed.errors %}
                         {{ error }}
                     {% endfor %}
                 </div>
                 {% endif %}
             </div>
-
-            <button type="submit" class="btn btn--submit">ASK</button>
             
+            <div class="ask-formgroup">
+                <label class="ask-label">Теги</label>
+                <input type="text" id="ask-tagsearch" class="ask-input" placeholder="Начните набирать для поиска...">
+                <div id="ask-tagchoices">
+                    {{ form.tags }}
+                </div>
+                {% if form.tags.errors %}
+                <div class="ask-error">
+                    {% for error in form.tags.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="ask-btn-submit">ASK</button>
+
         </form>
     </div>
 </div>
-<div class="right-column"></div>
+<div class="ask-right"></div>
 {% endblock %}

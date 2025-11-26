@@ -1,7 +1,7 @@
 from django import forms
 from django.forms.widgets import PasswordInput, TextInput
 from django.contrib.auth import authenticate
-from core.models import Question
+from core.models import Question, Tag
 
 
 class LoginForm(forms.Form):
@@ -35,11 +35,18 @@ class LoginForm(forms.Form):
         return cleaned_data
         
 
-class QuestionForm(forms.ModelForm):
-    class Meta:
-        model = Question
-        fields = {
-            'title', 
-            'detailed',
-            'tags'
-        }
+class QuestionForm(forms.Form):
+    title = forms.CharField(
+        label='Заголовок вопроса',
+        widget=forms.TextInput(attrs={'class': 'form-input'})
+    )
+    detailed = forms.CharField(
+        label='Описание вопроса',
+        widget=forms.TextInput(attrs={'class': 'form-textarea'})
+    )
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'ask-tag'}),
+        required=False,
+        label='Теги'
+    )
