@@ -3,6 +3,10 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.generic import TemplateView
 from django.db.models import Count
 from core.models import Question, Tag
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from core.forms import LoginForm
 
 def paginate(objects_list, request, per_page=10):
     paginator = Paginator(objects_list, per_page)
@@ -22,6 +26,8 @@ def get_popular_tags():
         questions_count=Count('question')
     ).order_by('-questions_count')[:10]
 
+@method_decorator(never_cache, name='dispatch')
+@method_decorator(login_required, name='dispatch')
 class IndexView(TemplateView):
     template_name = 'core/index.html'
     
@@ -115,17 +121,17 @@ class QuestionView(TemplateView):
             
         return context
     
-class LoginView(TemplateView):
-    template_name = 'core/login.html'
+# class LoginView(TemplateView):
+#     template_name = 'core/login.html'
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update({
-            'is_authenticated': self.request.session.get('is_authenticated', False),
-            'username': '',
-            'popular_tags': get_popular_tags()
-        })
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context.update({
+#             'is_authenticated': self.request.session.get('is_authenticated', False),
+#             'username': '',
+#             'popular_tags': get_popular_tags()
+#         })
+#         return context
 
 class SignupView(TemplateView):
     template_name = 'core/signup.html'
@@ -178,6 +184,21 @@ class SettingsView(TemplateView):
             'popular_tags': get_popular_tags()
         })
         return context
+
+class AuthView(TemplateView):
+    http_method_names = ['get', 'post']
+    template_name = 'core/auth.html'
+
+    def get_context_data(self, **kwargs):
+        form = LoginForm()
+        context = super(AuthView, self).get_context_data(**kwargs)
+        context['form'] = form
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        ...
+    
+
 
 def like_question(request, question_id):
     if request.method == 'POST' and request.session.get('is_authenticated'):
