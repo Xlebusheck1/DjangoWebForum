@@ -33,3 +33,13 @@
     color: #081924;
     text-decoration: underline;
 }
+
+
+.login-input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    width: 100%;
+    margin-bottom: 10px;
+}
