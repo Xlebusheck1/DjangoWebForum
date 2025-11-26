@@ -27,7 +27,9 @@
                 <img src="#" alt="Аватар" class="header__user-avatar">
                 <span class="header__user-name">{{ username }}</span>
                 <a href="{% url 'settings' %}" class="header__user-link">settings</a>
-                <a href="{% url 'logout' %}" class="header__user-link">log out</a>
+                <form method="POST" action="{% url 'logout' %}">
+                    <button class='btn' type='submit'>log out</button>
+                </form>
             </div>
         {% else %}
             <button class="header__ask-btn" onclick="location.href='{% url 'signup' %}'">ASK</button>
