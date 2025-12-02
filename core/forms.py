@@ -75,8 +75,8 @@ class SignupForm(forms.ModelForm):
         labels = {
             'username': 'Имя пользователя',
             'email': 'Email',
-        }
-
+        }   
+    
     def clean_password2(self):
         password1 = self.cleaned_data.get('password1')
         password2 = self.cleaned_data.get('password2')
@@ -85,9 +85,8 @@ class SignupForm(forms.ModelForm):
         if password1 != password2:
             raise ValidationError('Пароли не совпадают')
         validate_password(password2)
-
         return password2
-    
+
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if User.objects.filter(username=username).exists():
@@ -108,17 +107,48 @@ class SignupForm(forms.ModelForm):
             user.save()
         return user
 
+
 class QuestionForm(forms.Form):
     title = forms.CharField(
         label='Заголовок вопроса',
-        widget=forms.TextInput(attrs={'class': 'form-input'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-input'
+            })
     )
     detailed = forms.CharField(
         label='Описание вопроса',
-        widget=forms.Textarea(attrs={'class': 'form-textarea'})
+        widget=forms.Textarea(attrs={
+            'class': 'form-textarea'
+            })
     )
     tags = forms.CharField(
         label='Теги',
         required=False,
         widget=forms.HiddenInput() 
     )
+
+
+class SettingsForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'avatar')
+        widgets = {
+            'username': TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Имя пользователя',
+                'autocomplete': 'username',
+            }),
+             'email': EmailInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Email',
+                'autocomplete': 'email',
+            }),
+            'avatar': forms.FileInput(attrs={
+                'class': 'form-input',
+            })
+        }
+        labels = {
+            'username': 'Имя пользователя',
+            'email': 'Email',
+            'avatar': 'Аватар',
+        }

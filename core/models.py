@@ -63,10 +63,12 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+
 class QuestionLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
 
 class AnswerLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

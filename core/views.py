@@ -6,9 +6,10 @@ from core.models import Question, Tag
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
-from core.forms import LoginForm, QuestionForm, SignupForm
+from core.forms import LoginForm, QuestionForm, SignupForm, SettingsForm
 from django.contrib.auth import login, logout
 from django.contrib import messages
+from django.views.generic import FormView
 
 def paginate(objects_list, request, per_page=10):
     paginator = Paginator(objects_list, per_page)
@@ -175,6 +176,14 @@ class SettingsView(TemplateView):
             return redirect('login')
         return super().dispatch(request, *args, **kwargs)
     
+    def post(self, request, *args, **kwargs):
+        form = SettingsForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('index') 
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         is_authenticated = self.request.user.is_authenticated
@@ -184,6 +193,7 @@ class SettingsView(TemplateView):
             'username': username,
             'popular_tags': get_popular_tags()
         })
+        context['form'] = SettingsForm(instance=self.request.user)
         return context
 
 

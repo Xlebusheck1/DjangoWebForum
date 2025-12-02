@@ -10,30 +10,56 @@
 {% block content %}
 <div class="left-column">
     <div class="settings">
-        <h2 class="settings__title">Settings: user</h2>
-        <form class="settings__form">
-            <div class="form-group">
-                <label for="settings-login" class="form-label">Login</label>
-                <input type="text" id="settings-login" class="form-input" value="current_user" placeholder="Введите ваш логин">
-            </div>
-            <div class="form-group">
-                <label for="settings-email" class="form-label">Email</label>
-                <input type="email" id="settings-email" class="form-input" value="user@example.com" placeholder="Введите ваш email">
-            </div>
-            <div class="form-group">
-                <label for="settings-nick" class="form-label">Nick</label>
-                <input type="text" id="settings-nick" class="form-input" value="CoolDeveloper" placeholder="Введите ваш ник">
-            </div>
-            <div class="form-group">
-                <label for="settings-avatar" class="form-label">Avatar</label>
-                <div class="settings__avatar-preview">
-                    <div class="settings__avatar-image">
-                        <img src="#" class="settings__current-avatar">
-                    </div>
-                    <input type="file" id="settings-avatar" class="form-file" accept="image/*">
+        <h2 class="page-title">Настройки: {{ username }}</h2>
+        <form method="POST" action="{% url 'settings' %}" class="settings__form">
+            {% csrf_token %}
+
+            <div class="settings__avatar-preview">
+                <div class="settings__avatar-image">
+                    {% if request.user.avatar %}
+                        <img src="{{ request.user.avatar.url }}" alt="Текущий аватар" class="settings__current-avatar">
+                    {% else %}
+                        <img src="{% static 'img/default-avatar.png' %}" alt="Нет аватара" class="settings__current-avatar">
+                    {% endif %}
                 </div>
-            </div>
-            <button type="submit" class="btn">Save</button>
+                <p class="form-file">
+                    <label for={{ form.avatar.id_for_label }} class="form-label">Avatar</label>
+                    {{ form.avatar }}
+                    {% if form.avatar.errors %}
+                    <div style="color: red; font-size: 0.875rem;">
+                        {% for error in form.avatar.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </p>
+            </div>            
+
+            <p class="form-group">
+                <label for={{ form.username.id_for_label }} class="form-label">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                <div style="color: red; font-size: 0.875rem;">
+                    {% for error in form.username.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </p>
+
+            <p class="form-group">
+                <label for={{ form.email.id_for_label }} class="form-label">Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                <div style="color: red; font-size: 0.875rem;">
+                    {% for error in form.email.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </p>
+
+            <button type="submit" class="btn btn-submit">Сохранить</button>
         </form>
     </div>
 </div>

@@ -29,3 +29,10 @@ body {
 .right-column {
     padding: 20px;
 }
+
+.page-title {
+    color: #081924;
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    text-align: center;
+}

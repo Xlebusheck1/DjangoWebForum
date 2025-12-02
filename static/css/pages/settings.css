@@ -8,13 +8,6 @@
     width: 100%;
 }
 
-.settings__title {
-    color: #081924;
-    font-size: 1.8rem;
-    margin-bottom: 25px;
-    text-align: center;
-}
-
 .settings__form {
     display: flex;
     flex-direction: column;
