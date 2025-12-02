@@ -11,15 +11,15 @@
 <div class="left-column">
     <div class="settings">
         <h2 class="page-title">Настройки: {{ username }}</h2>
-        <form method="POST" action="{% url 'settings' %}" class="settings__form">
+        <form method="POST" action="{% url 'settings' %}" class="settings-form">
             {% csrf_token %}
 
-            <div class="settings__avatar-preview">
-                <div class="settings__avatar-image">
+            <div class="settings-avatar-preview">
+                <div class="settings-avatar-image">
                     {% if request.user.avatar %}
-                        <img src="{{ request.user.avatar.url }}" alt="Текущий аватар" class="settings__current-avatar">
+                        <img src="{{ request.user.avatar.url }}" alt="Текущий аватар" class="settings-current-avatar">
                     {% else %}
-                        <img src="{% static 'img/default-avatar.png' %}" alt="Нет аватара" class="settings__current-avatar">
+                        <img src="{% static 'img/default-avatar.png' %}" alt="Нет аватара" class="settings-current-avatar">
                     {% endif %}
                 </div>
                 <p class="form-file">

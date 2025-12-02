@@ -17,21 +17,21 @@
     
     {% for question in questions %}
     <div class="question">
-        <div class="question__avatar">
+        <div class="question-avatar">
             <img src="#">
         </div>
-        <div class="question__content">
-            <a href="{% url 'question' question.id %}" class="question__title">{{ question.title }}</a>
-            <p class="question__description">{{ question.detailed }}</p>
-            <div class="question__meta">
-                <div class="question__tags">
+        <div class="question-content">
+            <a href="{% url 'question' question.id %}" class="question-title">{{ question.title }}</a>
+            <p class="question-description">{{ question.detailed }}</p>
+            <div class="question-meta">
+                <div class="question-tags">
                     {% for tag in question.tags.all %}
                     <a href="{% url 'tag' tag.name %}" class="tag">{{ tag.name }}</a>
                     {% endfor %}
                 </div>
-                <div class="question__stats">
-                    <span class="question__likes">❤️ {{ question.likes_count }}</span>
-                    <a href="{% url 'question' question.id %}" class="question__answers-link">
+                <div class="question-stats">
+                    <span class="question-likes">❤️ {{ question.likes_count }}</span>
+                    <a href="{% url 'question' question.id %}" class="question-answers-link">
                         Ответы ({{ question.answer_set.count }})
                     </a>
                 </div>

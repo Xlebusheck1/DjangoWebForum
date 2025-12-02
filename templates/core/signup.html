@@ -10,8 +10,8 @@
 {% block content %}
 <div class="left-column">
     <div class="registration">
-        <h2 class="registration__title">Registration</h2>        
-        <form class="registration__form" method="POST" action="{% url 'signup' %}">
+        <h2 class="registration-title">Registration</h2>        
+        <form class="registration-form" method="POST" action="{% url 'signup' %}">
             {% csrf_token %}
 
             {% if form.non_field_errors %}

@@ -9,7 +9,7 @@
     flex-wrap: wrap;
 }
 
-.header__logo {
+.header-logo {
     color: #081924;
     font-size: 1.5rem;
     white-space: nowrap;
@@ -17,7 +17,7 @@
     cursor: pointer;
 }
 
-.header__search-form {
+.header-search-form {
     display: flex;
     gap: 5px;
     flex: 1;
@@ -25,7 +25,7 @@
     margin: 0 auto;
 }
 
-.header__search-input {
+.header-search-input {
     padding: 8px 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -33,7 +33,7 @@
     min-width: 150px;
 }
 
-.header__ask-btn {
+.header-ask-btn {
     padding: 8px 20px;
     background: #081924;
     color: white;
@@ -45,11 +45,11 @@
     transition: background-color 0.2s;
 }
 
-.header__ask-btn:hover {
+.header-ask-btn:hover {
     background: #5b7286;
 }
 
-.header__user-menu {
+.header-user-menu {
     display: flex;
     align-items: center;
     gap: 15px;
@@ -58,20 +58,20 @@
     justify-content: flex-end;
 }
 
-.header__user-avatar {
+.header-user-avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
 }
 
-.header__user-name {
+.header-user-name {
     font-weight: bold;
     color: #081924;
     white-space: nowrap;
 }
 
-.header__user-link {
+.header-user-link {
     color: #081924;
     text-decoration: none;
     font-size: 0.9rem;
@@ -79,7 +79,7 @@
     font-weight: bold;
 }
 
-.header__divider {
+.header-divider {
     border: none;
     height: 1px;
     background-color: #081924;

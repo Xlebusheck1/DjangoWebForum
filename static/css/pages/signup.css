@@ -8,14 +8,14 @@
     width: 100%;
 }
 
-.registration__title {
+.registration-title {
     color: #081924;
     font-size: 1.8rem;
     margin-bottom: 20px;
     text-align: center;
 }
 
-.registration__form {
+.registration-form {
     display: flex;
     flex-direction: column;
     gap: 20px;

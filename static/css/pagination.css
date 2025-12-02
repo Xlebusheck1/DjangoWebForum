@@ -7,7 +7,7 @@
     border-top: 1px solid #e0e0e0;
 }
 
-.pagination__btn {
+.pagination-btn {
     padding: 8px 15px;
     border: 1px solid #ddd;
     background: #fff;
@@ -16,7 +16,7 @@
     transition: background-color 0.2s;
 }
 
-.pagination__btn:hover {
+.pagination-btn:hover {
     background: #c5c5c5;
     color: #081924;
 }

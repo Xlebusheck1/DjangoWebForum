@@ -8,20 +8,20 @@
     width: 100%;
 }
 
-.login__title {
+.login-title {
     color: #081924;
     font-size: 1.8rem;
     margin-bottom: 20px;
     text-align: center;
 }
 
-.login__form {
+.login-form {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.login__register-link {
+.login-register-link {
     color: #326183;
     text-decoration: none;
     text-align: center;
@@ -29,7 +29,7 @@
     margin-top: 10px;
 }
 
-.login__register-link:hover {
+.login-register-link:hover {
     color: #081924;
     text-decoration: underline;
 }

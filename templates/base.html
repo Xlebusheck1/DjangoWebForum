@@ -14,34 +14,8 @@
     <link rel="stylesheet" href="{% static 'css/navigation.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
-<body>
-    <header class="header">
-        <h1 class="header__logo" onclick="location.href='{% url 'index' %}'">DevGuru</h1>
-        <form class="header__search-form">
-            <input type="text" class="header__search-input" placeholder="Поиск по сайту...">
-        </form>
-        
-        {% if user.is_authenticated %}            
-            <button class="header__ask-btn" onclick="location.href='{% url 'ask' %}'">ASK</button>
-            <div class="header__user-menu">
-                <img src="#" alt="Аватар" class="header__user-avatar">
-                <span class="header__user-name">{{ user.username }}</span>
-                <a href="{% url 'settings' %}" class="header__user-link">settings</a>
-                <form method="POST" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button class='btn' type='submit'>log out</button>
-                </form>
-            </div>
-        {% else %}
-            <button class="header__ask-btn" onclick="location.href='{% url 'signup' %}'">ASK</button>
-            <div class="header__user-menu">
-                <a href="{% url 'login' %}" class="header__user-link">log in</a>
-                <a href="{% url 'signup' %}" class="header__user-link">register</a>
-            </div>
-        {% endif %}
-    </header>
-
-    <hr class="header__divider">
+<body>        
+    {% include 'header.html' %}
 
     <main class="main-container">
         

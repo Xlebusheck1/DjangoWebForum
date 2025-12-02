@@ -10,7 +10,7 @@
 <div class="left-column">
     <div class="login">        
 
-        <form class="login__form" method="POST" action="{% url 'login' %}">
+        <form class="login-form" method="POST" action="{% url 'login' %}">
             {% csrf_token %}       
             
             {% if form.non_field_errors %}
@@ -49,7 +49,7 @@
             </div>
 
             <button type="submit" class="btn">Log in</button>            
-            <a href="{% url 'signup' %}" class="login__register-link">register new account</a>
+            <a href="{% url 'signup' %}" class="login-register-link">register new account</a>
         </form>
 
     </div>
