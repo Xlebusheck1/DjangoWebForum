@@ -10,32 +10,32 @@
 {% block content %}
 <div class="left-column">
     <div class="settings">
-        <h2 class="page-title">Настройки: {{ username }}</h2>
+        <h2 class="settings-title">Настройки: {{ username }}</h2>
         <form method="POST" action="{% url 'settings' %}" class="settings-form">
             {% csrf_token %}
 
-            <div class="settings-avatar-preview">
-                <div class="settings-avatar-image">
+            <div class="settings-avatar-section">
+                <div class="settings-avatar-preview">
                     {% if request.user.avatar %}
                         <img src="{{ request.user.avatar.url }}" alt="Текущий аватар" class="settings-current-avatar">
                     {% else %}
                         <img src="{% static 'img/default-avatar.png' %}" alt="Нет аватара" class="settings-current-avatar">
                     {% endif %}
                 </div>
-                <p class="form-file">
-                    <label for={{ form.avatar.id_for_label }} class="form-label">Avatar</label>
+                <div class="settings-avatar-upload">
+                    <label for="{{ form.avatar.id_for_label }}" class="form-label">Загрузить аватар</label>
                     {{ form.avatar }}
                     {% if form.avatar.errors %}
-                    <div style="color: red; font-size: 0.875rem;">
+                    <div class="form-error">
                         {% for error in form.avatar.errors %}
-                            {{ error }}
+                            <p>{{ error }}</p>
                         {% endfor %}
                     </div>
                     {% endif %}
-                </p>
-            </div>            
+                </div>
+            </div>    
 
-            <p class="form-group">
+            <p class="settings-group">
                 <label for={{ form.username.id_for_label }} class="form-label">Username</label>
                 {{ form.username }}
                 {% if form.username.errors %}
@@ -47,7 +47,7 @@
                 {% endif %}
             </p>
 
-            <p class="form-group">
+            <p class="settings-group">
                 <label for={{ form.email.id_for_label }} class="form-label">Email</label>
                 {{ form.email }}
                 {% if form.email.errors %}
