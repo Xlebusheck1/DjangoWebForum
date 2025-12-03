@@ -6,6 +6,47 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
 
+class PasswordChangeForm(forms.Form):
+    password1 = forms.CharField(
+        max_length=120,
+        widget=forms.PasswordInput(attrs={
+            'class': 'settings-input',
+            'placeholder': 'Новый пароль',
+            'autocomplete': 'new-password',
+        }),
+        label='Новый пароль'
+    )
+    password2 = forms.CharField(
+        max_length=120,
+        widget=forms.PasswordInput(attrs={
+            'class': 'settings-input',
+            'placeholder': 'Повторите пароль',
+            'autocomplete': 'new-password',
+        }),
+        label='Повторите пароль'
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        p1 = cleaned_data.get('password1')
+        p2 = cleaned_data.get('password2')
+
+        if not p1 or not p2:
+            raise ValidationError('Введите пароль дважды')
+        if p1 != p2:
+            raise ValidationError('Пароли не совпадают')
+
+        validate_password(p2)
+        return cleaned_data
+
+    def save(self, user, commit=True):
+        password = self.cleaned_data['password1']
+        user.set_password(password)
+        if commit:
+            user.save()
+        return user
+
+
 class LoginForm(forms.Form):
     username = forms.CharField(
         max_length=150,
@@ -37,25 +78,7 @@ class LoginForm(forms.Form):
         return cleaned_data
         
 
-class SignupForm(forms.ModelForm):
-    password1 = forms.CharField(
-        max_length=120,
-        widget=PasswordInput(attrs={
-            'class': 'auth-input',
-            'placeholder': 'Пароль',
-            'autocomplete': 'new-password',
-        }),
-        label='Пароль'
-    )
-    password2 = forms.CharField(
-        max_length=120,
-        widget=PasswordInput(attrs={
-            'class': 'auth-input',
-            'placeholder': 'Повторите пароль',
-            'autocomplete': 'new-password',
-        }),
-        label='Повторите пароль'
-    )
+class SignupForm(PasswordChangeForm, forms.ModelForm):   
 
     class Meta:
         model = User
@@ -75,17 +98,7 @@ class SignupForm(forms.ModelForm):
         labels = {
             'username': 'Имя пользователя',
             'email': 'Email',
-        }   
-    
-    def clean_password2(self):
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
-        if not password1 or not password2:
-            raise ValidationError('Введите пароль дважды')
-        if password1 != password2:
-            raise ValidationError('Пароли не совпадают')
-        validate_password(password2)
-        return password2
+        }          
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -152,3 +165,5 @@ class SettingsForm(forms.ModelForm):
             'email': 'Email',
             'avatar': 'Аватар',
         }
+
+

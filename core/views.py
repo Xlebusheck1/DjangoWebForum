@@ -6,10 +6,10 @@ from core.models import Question, Tag
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
-from core.forms import LoginForm, QuestionForm, SignupForm, SettingsForm
+from core.forms import LoginForm, QuestionForm, SignupForm, SettingsForm, PasswordChangeForm
 from django.contrib.auth import login, logout
 from django.contrib import messages
-from django.views.generic import FormView
+from django.contrib.auth import update_session_auth_hash
 
 def paginate(objects_list, request, per_page=10):
     paginator = Paginator(objects_list, per_page)
@@ -166,7 +166,25 @@ class AskView(TemplateView):
         
         return render(request, self.template_name, {'form': form, 'tags': Tag.objects.all()})
     
+@method_decorator(login_required, name='dispatch')
+class PasswordChangeView(TemplateView):
+    template_name = 'core/change_password.html'
 
+    def get(self, request, *args, **kwargs):
+        form = PasswordChangeForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = PasswordChangeForm(request.POST)
+        if form.is_valid():
+            user = form.save(request.user)            
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Пароль успешно изменён')
+            return redirect('settings') 
+        return render(request, self.template_name, {'form': form})
+
+
+@method_decorator(login_required, name='dispatch')
 class SettingsView(TemplateView):
     template_name = 'core/settings.html'
     
