@@ -86,7 +86,7 @@ class TagView(TemplateView):
         username = self.request.user.username if is_authenticated else ''
         tag_name = kwargs.get('tag_name')
         
-        questions = Question.objects.filter(tags__title=tag_name).order_by('-created_at')
+        questions = Question.objects.filter(tags__name=tag_name).order_by('-created_at')
         page_obj = paginate(questions, self.request, 5)
         
         context.update({
