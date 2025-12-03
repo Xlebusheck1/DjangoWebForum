@@ -1,0 +1,165 @@
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    text-decoration: none;
+}
+
+.btn:focus {
+    outline: 2px solid #d4704d;
+    outline-offset: 2px;
+}
+
+.btn--primary {
+    background: #d4704d;
+    color: #ffffff;
+}
+
+.btn--primary:hover {
+    background: #b8563a;
+}
+
+.btn--primary:active {
+    background: #8b3f26;
+}
+
+.btn--secondary {
+    background: #f0ebe5;
+    color: #2c2c2c;
+}
+
+.btn--secondary:hover {
+    background: #d9d4cc;
+}
+
+.btn--outline {
+    background: transparent;
+    border: 1px solid #e8e4dd;
+    color: #2c2c2c;
+}
+
+.btn--outline:hover {
+    background: #f0ebe5;
+    border-color: #d4704d;
+}
+
+.btn--sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 4px;
+}
+
+.btn--lg {
+    padding: 12px 24px;
+    font-size: 1.05rem;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-size: 0.95rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e8e4dd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #2c2c2c;
+    background-color: #ffffff;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-family: inherit;
+}
+
+.form-control:focus {
+    border-color: #d4704d;
+    outline: 2px solid #d4704d;
+    box-shadow: 0 0 0 3px rgba(212, 112, 77, 0.1);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-error {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+.form-error-input {
+    border-color: #dc3545;
+}
+
+.tag {
+    display: inline-block;
+    background: #f0ebe5;
+    color: #2c2c2c;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    text-decoration: none;
+}
+
+.tag:hover {
+    background: #d4704d;
+    color: #ffffff;
+}
+
+.tag.selected {
+    background: #d4704d;
+    color: #ffffff;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge--success {
+    background: rgba(40, 167, 69, 0.15);
+    color: #28a745;
+}
+
+.badge--danger {
+    background: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+}
+
+.badge--warning {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+}
+
+.badge--info {
+    background: rgba(17, 182, 224, 0.15);
+    color: #11b6e0;
+}

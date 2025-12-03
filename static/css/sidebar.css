@@ -1,6 +1,6 @@
 .sidebar-block {
-    background: #fff;
-    border: 1px solid #ddd;
+    background: #ffffff;
+    border: 1px solid #e8e4dd;
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
@@ -8,7 +8,7 @@
 
 .sidebar-block-title {
     margin-bottom: 15px;
-    color: #081924;
+    color: #2c2c2c;
     font-size: 1.1rem;
     font-weight: bold;
 }
@@ -20,8 +20,8 @@
 }
 
 .sidebar-tag {
-    background: #e9ecef;
-    color: #081924;
+    background: #f0ebe5;
+    color: #2c2c2c;
     padding: 5px 10px;
     border-radius: 15px;
     font-size: 0.85rem;
@@ -32,11 +32,12 @@
 }
 
 .sidebar-tag:hover {
-    background: #c5c5c5;
+    background: #d4704d;
+    color: #ffffff;
 }
 
 .sidebar-notags {
-    color: #8a8a8a;
+    color: #5c5c5c;
     font-size: 0.9rem;
 }
 
@@ -51,7 +52,7 @@
     align-items: center;
     gap: 10px;
     text-decoration: none;
-    color: #081924;
+    color: #2c2c2c;
     padding: 8px;
     border-radius: 4px;
     transition: background-color 0.2s;
@@ -59,7 +60,7 @@
 }
 
 .sidebar-user-profile:hover {
-    background: #c5c5c5;
+    background: #f0ebe5;
 }
 
 .sidebar-user-avatar {
@@ -67,5 +68,5 @@
     height: 30px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid #ddd;
+    border: 1px solid #e8e4dd;
 }

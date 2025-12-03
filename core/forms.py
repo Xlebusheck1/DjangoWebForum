@@ -10,7 +10,7 @@ class LoginForm(forms.Form):
     username = forms.CharField(
         max_length=150,
         widget=TextInput(attrs={
-            'class': 'login-input',
+            'class': 'auth-input',
             'placeholder': 'Имя пользователя',
             'autocomplete': 'username'
         })
@@ -18,7 +18,7 @@ class LoginForm(forms.Form):
     password = forms.CharField(
         max_length=120,
         widget=PasswordInput(attrs={
-            'class': 'login-input',
+            'class': 'auth-input',
             'placeholder': 'Пароль',
             'autocomplete': 'current-password'
         }),
@@ -41,7 +41,7 @@ class SignupForm(forms.ModelForm):
     password1 = forms.CharField(
         max_length=120,
         widget=PasswordInput(attrs={
-            'class': 'form-input',
+            'class': 'auth-input',
             'placeholder': 'Пароль',
             'autocomplete': 'new-password',
         }),
@@ -50,7 +50,7 @@ class SignupForm(forms.ModelForm):
     password2 = forms.CharField(
         max_length=120,
         widget=PasswordInput(attrs={
-            'class': 'form-input',
+            'class': 'auth-input',
             'placeholder': 'Повторите пароль',
             'autocomplete': 'new-password',
         }),
@@ -62,12 +62,12 @@ class SignupForm(forms.ModelForm):
         fields = ('username', 'email')
         widgets = {
             'username': TextInput(attrs={
-                'class': 'form-input',
+                'class': 'auth-input',
                 'placeholder': 'Имя пользователя',
                 'autocomplete': 'username',
             }),
              'email': EmailInput(attrs={
-                'class': 'form-input',
+                'class': 'auth-input',
                 'placeholder': 'Email',
                 'autocomplete': 'email',
             }),
@@ -134,17 +134,17 @@ class SettingsForm(forms.ModelForm):
         fields = ('username', 'email', 'avatar')
         widgets = {
             'username': TextInput(attrs={
-                'class': 'form-input',
+                'class': 'settings-input',
                 'placeholder': 'Имя пользователя',
                 'autocomplete': 'username',
             }),
              'email': EmailInput(attrs={
-                'class': 'form-input',
+                'class': 'settings-input',
                 'placeholder': 'Email',
                 'autocomplete': 'email',
             }),
             'avatar': forms.FileInput(attrs={
-                'class': 'form-input',
+                'class': 'settings-input',
             })
         }
         labels = {
