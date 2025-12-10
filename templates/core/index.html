@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}DevGuru - Главная{% endblock %}
+{% block extra_scripts %}
+<script src="{% static 'js/likes.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+DevGuru - Главная
+{% endblock %}
 
 {% block content %}
 
@@ -30,7 +36,17 @@
                     {% endfor %}
                 </div>
                 <div class="question-stats">
-                    <span class="question-likes">❤️ {{ question.likes_count }}</span>
+                    <button
+                        type="button"
+                        class="like-btn"
+                        data-question-id="{{ question.id }}"
+                        onclick="sendLike({{ question.id }})">
+                        ❤️
+                    </button>
+                    <span id="question-{{ question.id }}-rating"
+                        class="question-likes">
+                        {{ question.rating }}
+                    </span>
                     <a href="{% url 'question' question.id %}" class="question-answers-link">
                         Ответы ({{ question.answer_set.count }})
                     </a>

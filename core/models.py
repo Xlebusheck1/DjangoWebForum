@@ -25,9 +25,12 @@ class Question(DefaultModel):
 
     title = models.CharField(max_length=200)
     detailed = models.TextField()
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='authored_questions')
     tags = models.ManyToManyField('Tag', blank=True, verbose_name="Теги")
     likes = models.ManyToManyField(User, through='QuestionLike', related_name='question_likes')
+
+    likes = models.ManyToManyField(User, through='QuestionLike', blank=True)
+    rating = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return str(self.title)
@@ -42,10 +45,14 @@ class Answer(DefaultModel):
         verbose_name_plural = 'Ответы'
 
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='authored_answers')
     answer_text = models.TextField()
     likes = models.ManyToManyField(User, through='AnswerLike', related_name='answer_likes')
     
+    likes = models.ManyToManyField(User, through='AnswerLike', blank=True)
+    rating = models.PositiveIntegerField(default=0)
+
+
     def __str__(self):
         return "Ответ на вопрос с ID = " + str(self.question_id)
     
@@ -65,12 +72,23 @@ class Tag(models.Model):
 
 
 class QuestionLike(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    class Meta:
+        verbose_name = "Лайки вопросов"
+        unique_together = ('question', 'author')
+    
+
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_questions')
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_like = models.BooleanField(default=True)
 
 
 class AnswerLike(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    class Meta:
+        verbose_name = "Лайки ответов"
+        unique_together = ('answer', 'author')
+
+        
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_answers')
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
