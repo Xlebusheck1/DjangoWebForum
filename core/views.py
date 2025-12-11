@@ -12,6 +12,7 @@ from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.views import View
+from django.db.models import Count, Exists, OuterRef
 from .models import AnswerLike, QuestionLike
 
 
@@ -42,11 +43,25 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         is_authenticated = self.request.user.is_authenticated
-        username = self.request.user.username if is_authenticated else ''      
-       
-        questions = Question.objects.all().order_by('-created_at')
+        username = self.request.user.username if is_authenticated else ''
+
+        user = self.request.user
+        questions = (
+            Question.objects
+            .all()
+            .order_by('-created_at')
+            .annotate(
+                is_liked=Exists(
+                    QuestionLike.objects.filter(
+                        author=user,
+                        question_id=OuterRef('pk'),
+                        is_like=True,
+                    )
+                )
+            )
+        )
         page_obj = paginate(questions, self.request, 5)
-        
+
         context.update({
             'questions': page_obj,
             'is_authenticated': is_authenticated,
@@ -64,13 +79,24 @@ class HotView(TemplateView):
         context = super().get_context_data(**kwargs)
         is_authenticated = self.request.user.is_authenticated
         username = self.request.user.username if is_authenticated else ''
-        
-        
-        questions = Question.objects.annotate(
-            likes_count=Count('likes')
-        ).order_by('-likes_count', '-created_at')
+
+        user = self.request.user
+        questions = (
+            Question.objects
+            .annotate(
+                likes_count=Count('likes'),
+                is_liked=Exists(
+                    QuestionLike.objects.filter(
+                        author=user,
+                        question_id=OuterRef('pk'),
+                        is_like=True,
+                    )
+                )
+            )
+            .order_by('-likes_count', '-created_at')
+        )
         page_obj = paginate(questions, self.request, 5)
-        
+
         context.update({
             'questions': page_obj,
             'is_authenticated': is_authenticated,
@@ -89,10 +115,24 @@ class TagView(TemplateView):
         is_authenticated = self.request.user.is_authenticated
         username = self.request.user.username if is_authenticated else ''
         tag_name = kwargs.get('tag_name')
-        
-        questions = Question.objects.filter(tags__name=tag_name).order_by('-created_at')
+
+        user = self.request.user
+        questions = (
+            Question.objects
+            .filter(tags__name=tag_name)
+            .order_by('-created_at')
+            .annotate(
+                is_liked=Exists(
+                    QuestionLike.objects.filter(
+                        author=user,
+                        question_id=OuterRef('pk'),
+                        is_like=True,
+                    )
+                )
+            )
+        )
         page_obj = paginate(questions, self.request, 5)
-        
+
         context.update({
             'questions': page_obj,
             'tag_name': tag_name,
@@ -101,6 +141,7 @@ class TagView(TemplateView):
             'popular_tags': get_popular_tags()
         })
         return context
+
 
 
 class QuestionView(TemplateView):
@@ -287,36 +328,41 @@ class QuestionLikeAPIView(View):
 
     def post(self, request, *args, **kwargs):
         question_id = request.POST.get('pk')
+        # true = поставить лайк, false = снять лайк
         is_like = request.POST.get('is_like', 'true') == 'true'
         question = get_object_or_404(Question, pk=question_id)
+
         if question.author == request.user:
             return JsonResponse({
-                'status' : 'true',
-                'error' : 'Вы являетесь автором вопроса',
-                }, status=400)
-        
-        like_exists = QuestionLike.objects.filter(author=request.user, question_id=question_id).first()
-        if like_exists and like_exists.is_like != is_like:
-            like_exists.is_like = is_like
-            like_exists.save(update_fields=['is_like'])
-            question.rating += 1 if is_like else -1
-            question.save(update_fields=['rating'])
-            
-        if like_exists:
-            return JsonResponse({
-                'success' : True,
-                'id' : like_exists.id,
-                'rating' : question.rating,
-            }, status=200)
-        
-        like = QuestionLike.objects.create(author=request.user, question_id=question_id, is_like=is_like)
-        question.rating += 1 if is_like else -1
+                'success': False,
+                'error': 'Вы являетесь автором вопроса',
+            }, status=400)
+
+        like = QuestionLike.objects.filter(
+            author=request.user,
+            question_id=question_id
+        ).first()
+
+        if is_like:
+            if not like:
+                QuestionLike.objects.create(
+                    author=request.user,
+                    question=question,
+                    is_like=True
+                )
+                question.rating += 1
+        else:
+            if like:
+                like.delete()
+                question.rating -= 1
+
         question.save(update_fields=['rating', 'updated_at'])
+
         return JsonResponse({
-                'success' : True,
-                'id' : like.id,
-                'rating' : question.rating
-            }, status=201) 
+            'success': True,
+            'rating': question.rating,
+        }, status=200)
+
 
 
 @method_decorator(login_required, name='dispatch')

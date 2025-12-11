@@ -5,10 +5,19 @@ function getCookie(name) {
     return value ? decodeURIComponent(value.split('=')[1]) : null;
 }
 
-function sendLike(question_id) {
+function toggleLike(question_id) {
     const ratingElement = document.getElementById(
         `question-${question_id}-rating`
     );
+    if (!ratingElement) return;
+
+    const btn = document.querySelector(
+        `button.like-btn[data-question-id="${question_id}"]`
+    );
+    if (!btn) return;
+
+    const currentlyLiked = btn.dataset.liked === 'true';
+    const nextIsLike = !currentlyLiked;   // true = ставим лайк, false = снимаем
 
     fetch(`/api/question/${question_id}/like/`, {
         method: 'POST',
@@ -18,14 +27,25 @@ function sendLike(question_id) {
         },
         body: new URLSearchParams({
             pk: question_id,
-            is_like: 'true',
+            is_like: String(nextIsLike),
         }),
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success && data.rating !== undefined && ratingElement) {
+        if (data.success && data.rating !== undefined) {
             ratingElement.textContent = data.rating;
+            btn.dataset.liked = String(nextIsLike);
+
+            if (nextIsLike) {
+                btn.textContent = '💖';
+                btn.classList.add('like-btn--active');
+                btn.classList.remove('like-btn--inactive');
+            } else {
+                btn.textContent = '🤍';
+                btn.classList.add('like-btn--inactive');
+                btn.classList.remove('like-btn--active');
+            }
         }
     })
-    .catch(err => console.error('like error:', err));
+    .catch(err => console.error('like toggle error:', err));
 }

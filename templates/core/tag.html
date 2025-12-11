@@ -6,25 +6,9 @@
 {% block content %}
 <div class="left-column">
     <h2>Вопросы по тегу: {{ tag_name }}</h2>
-    
+
     {% for question in questions %}
-    <div class="question">
-        <div class="question-avatar">
-            <img src="#">
-        </div>
-        <div class="question-content">
-            <a href="{% url 'question' question.id %}" class="question-title">{{ question.title }}</a>
-            <p class="question-description">{{ question.detailed }}</p>
-            <div class="question-meta">
-                <div class="question-tags">
-                    {% for tag in question.tags.all %}
-                    <a href="{% url 'tag' tag.name %}" class="tag">{{ tag.name }}</a>
-                    {% endfor %}
-                </div>
-                <a href="{% url 'question' question.id %}" class="question-answers-link">Ответы ({{ question.id }})</a>
-            </div>
-        </div>
-    </div>
+        {% include 'components/question_card.html' %}
     {% endfor %}
 
     {% include 'pagination.html' with page=questions %}

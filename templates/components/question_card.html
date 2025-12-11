@@ -1,0 +1,38 @@
+<div class="question">
+    <div class="question-avatar">
+        <img src="#">
+    </div>
+    <div class="question-content">
+        <a href="{% url 'question' question.id %}" class="question-title">
+            {{ question.title }}
+        </a>
+        <p class="question-description">{{ question.detailed }}</p>
+        <div class="question-meta">
+            <div class="question-tags">
+                {% for tag in question.tags.all %}
+                <a href="{% url 'tag' tag.name %}" class="tag">{{ tag.name }}</a>
+                {% endfor %}
+            </div>
+            <div class="question-stats">
+                <button
+                    type="button"
+                    class="like-btn {% if question.is_liked %}like-btn--active{% else %}like-btn--inactive{% endif %}"
+                    data-question-id="{{ question.id }}"
+                    data-liked="{% if question.is_liked %}true{% else %}false{% endif %}"
+                    onclick="toggleLike({{ question.id }})">
+                    {% if question.is_liked %}💖{% else %}🤍{% endif %}
+                </button>
+
+                <span id="question-{{ question.id }}-rating"
+                      class="question-likes">
+                    {{ question.rating }}
+                </span>
+
+                <a href="{% url 'question' question.id %}"
+                   class="question-answers-link">
+                    Ответы ({{ question.answer_set.count }})
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

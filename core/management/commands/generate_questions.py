@@ -23,8 +23,7 @@ class Command(BaseCommand):
         parser.add_argument('--count', type=int, default=50,
                             help='Количество вопросов для генерации')
 
-    def get_author(self) -> User:
-        # любой существующий пользователь (сначала суперюзер, потом любой)
+    def get_author(self) -> User:        
         user = User.objects.filter(is_superuser=True).first()
         if user:
             return user
@@ -62,19 +61,15 @@ class Command(BaseCommand):
             )
 
         Question.objects.bulk_create(questions_to_create, batch_size=100)
-
-        # нужно перечитать из БД, чтобы были id
+       
         questions = list(
             Question.objects.order_by('-id')[:count]
         )
-
-        # назначаем теги и создаём ответы
-        for q in questions:
-            # 1–3 случайных тега
+      
+        for q in questions:           
             q_tags = random.sample(tags, k=min(len(tags), random.randint(1, 3)))
             q.tags.set(q_tags)
-
-            # 1–4 ответа к каждому вопросу
+          
             answers_to_create = []
             for _ in range(random.randint(1, 4)):
                 answers_to_create.append(

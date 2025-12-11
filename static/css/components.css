@@ -163,3 +163,21 @@ textarea.form-control {
     background: rgba(17, 182, 224, 0.15);
     color: #11b6e0;
 }
+
+.like-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 22px;
+    padding: 0 4px;
+}
+
+.like-btn--inactive {
+    color: #e0245e;  
+    opacity: 0.6;
+}
+
+.like-btn--active {
+    color: #e0245e;
+    opacity: 1;
+}

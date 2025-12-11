@@ -1,16 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block extra_scripts %}
-<script src="{% static 'js/likes.js' %}"></script>
-{% endblock %}
-
 {% block title %}
 DevGuru - Главная
 {% endblock %}
 
 {% block content %}
-
 <div class="left-column">
     <div class="questions-navigation">
         <a href="{% url 'index' %}" class="nav-link {% if current_sort == 'new' %}nav-link--active{% endif %}">
@@ -20,40 +15,9 @@ DevGuru - Главная
             Лучшие вопросы
         </a>
     </div>
-    
+
     {% for question in questions %}
-    <div class="question">
-        <div class="question-avatar">
-            <img src="#">
-        </div>
-        <div class="question-content">
-            <a href="{% url 'question' question.id %}" class="question-title">{{ question.title }}</a>
-            <p class="question-description">{{ question.detailed }}</p>
-            <div class="question-meta">
-                <div class="question-tags">
-                    {% for tag in question.tags.all %}
-                    <a href="{% url 'tag' tag.name %}" class="tag">{{ tag.name }}</a>
-                    {% endfor %}
-                </div>
-                <div class="question-stats">
-                    <button
-                        type="button"
-                        class="like-btn"
-                        data-question-id="{{ question.id }}"
-                        onclick="sendLike({{ question.id }})">
-                        ❤️
-                    </button>
-                    <span id="question-{{ question.id }}-rating"
-                        class="question-likes">
-                        {{ question.rating }}
-                    </span>
-                    <a href="{% url 'question' question.id %}" class="question-answers-link">
-                        Ответы ({{ question.answer_set.count }})
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+        {% include 'components/question_card.html' %}
     {% endfor %}
 
     {% include 'pagination.html' with page=questions %}
