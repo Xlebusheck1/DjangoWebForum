@@ -51,6 +51,7 @@ class Answer(DefaultModel):
     
     likes = models.ManyToManyField(User, through='AnswerLike', blank=True)
     rating = models.PositiveIntegerField(default=0)
+    is_correct = models.BooleanField(default=False, verbose_name="Правильный ответ")
 
 
     def __str__(self):

@@ -47,6 +47,17 @@
         </div>
     </div>
 
+    <div class="answers-sort-tabs">
+        <a href="?sort=best"
+        class="answers-sort-tab {% if answers_sort == 'best' %}answers-sort-tab--active{% endif %}">
+            Лучшие ответы
+        </a>
+        <a href="?sort=new"
+        class="answers-sort-tab {% if answers_sort == 'new' %}answers-sort-tab--active{% endif %}">
+            Последние
+        </a>
+    </div>
+
     <div class="answers-section">
         <h3 class="answers-section-title">Ответы</h3>
 
@@ -63,24 +74,35 @@
                 <div class="answer-main">
                     <div class="answer-text">
                         <p>{{ answer.answer_text }}</p>
-                    </div>
-                    <div class="answer-meta">
+                    </div>                    
+                    <div class="answer-meta">                       
                         <div class="answer-like-wrapper">
                             <button
                                 type="button"
                                 class="like-btn like-answer-btn {% if answer.is_liked %}like-btn--active{% else %}like-btn--inactive{% endif %}"
                                 data-answer-id="{{ answer.id }}"
-                                data-liked="{{ answer.is_liked|yesno:'true,false' }}"
-                            >
+                                data-liked="{{ answer.is_liked|yesno:'true,false' }}">
                                 {% if answer.is_liked %}💖{% else %}🤍{% endif %}
                             </button>
                             <span
                                 class="answer-likes"
-                                id="answer-{{ answer.id }}-rating"
-                            >
+                                id="answer-{{ answer.id }}-rating">
                                 {{ answer.likes_count }}
                             </span>
                         </div>
+
+                        {% if user.is_authenticated and user == question.author %}
+                            <button
+                                type="button"
+                                class="answer-mark-correct-btn {% if answer.is_correct %}answer-mark-correct-btn--active{% endif %}"
+                                data-answer-id="{{ answer.id }}">
+                                {% if answer.is_correct %}
+                                    ✓ Правильный ответ
+                                {% else %}
+                                    Отметить как правильный
+                                {% endif %}
+                            </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>

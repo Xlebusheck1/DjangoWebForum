@@ -153,7 +153,8 @@ class QuestionView(TemplateView):
         
         try:
             question_obj = Question.objects.get(id=question_id)
-            answers = question_obj.answer_set.annotate(
+            sort = self.request.GET.get("sort", "best") 
+            base_qs = question_obj.answer_set.annotate(
                 likes_count=Count("likes"),
                 is_liked=Exists(
                     AnswerLike.objects.filter(
@@ -161,8 +162,14 @@ class QuestionView(TemplateView):
                         answer_id=OuterRef("pk"),
                         is_like=True,
                     )
-                )
-            ).order_by("-likes_count", "-created_at")
+                ),
+            )
+
+            if sort == "new":
+                answers = base_qs.order_by("-is_correct", "-created_at")
+            else:  
+                answers = base_qs.order_by("-is_correct", "-likes_count", "-created_at")
+
             page_obj = paginate(answers, self.request, 3)
                         
             context.update({
@@ -400,3 +407,26 @@ class AnswerLikeAPIView(View):
 
         answer.save(update_fields=["rating", "updated_at"])
         return JsonResponse({"success": True, "rating": answer.rating}, status=200)
+    
+
+@method_decorator(login_required, name="dispatch")
+class MarkCorrectAnswerAPIView(View):
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        answer_id = request.POST.get("pk")
+        answer = get_object_or_404(Answer, pk=answer_id)
+        question = answer.question
+        
+        if question.author != request.user:
+            return JsonResponse(
+                {"success": False, "error": "Нет прав"},
+                status=403,
+            )
+       
+        Answer.objects.filter(question=question, is_correct=True).update(is_correct=False)
+        
+        answer.is_correct = True
+        answer.save(update_fields=["is_correct", "updated_at"])
+
+        return JsonResponse({"success": True}, status=200)

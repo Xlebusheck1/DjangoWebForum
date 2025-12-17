@@ -94,3 +94,34 @@ function toggleAnswerLike(answer_id) {
     })
     .catch(err => console.error('answer like toggle error:', err));
 }
+
+function markCorrectAnswer(answer_id) {
+    fetch("/api/answer/mark-correct/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "X-Requested-With": "XMLHttpRequest",
+        },
+        body: new URLSearchParams({
+            pk: answer_id,
+        }),
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            // самый простой вариант — перезагрузить страницу,
+            // чтобы обновилась сортировка и метки
+            location.reload();
+        }
+    })
+    .catch(err => console.error("mark correct error:", err));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".answer-mark-correct-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const answerId = btn.dataset.answerId;
+            markCorrectAnswer(answerId);
+        });
+    });
+});
