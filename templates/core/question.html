@@ -14,7 +14,7 @@
         {% if question.author.avatar %}
             <img src="{{ question.author.avatar.url }}" alt="avatar">
         {% else %}
-            <img src="{% static '/avatars/default-avatar.png' %}" alt="avatar">
+            <img src="{% static 'avatars/default-avatar.png' %}" alt="avatar">
         {% endif %}
         </div>
         <div class="question-full-content">
@@ -65,8 +65,8 @@
         <div class="answer">
             <div class="answer-content">
                 <div class="answer-avatar">
-                    {% if request.user.avatar %}
-                        <img src="{{ request.user.avatar.url }}" alt="Текущий аватар" class="settings-current-avatar">
+                    {% if answer.author.avatar %}
+                        <img src="{{ answer.author.avatar.url }}" alt="Текущий аватар" class="settings-current-avatar">
                     {% else %}
                         <img src="{% static '/avatars/default-avatar.png' %}" alt="Нет аватара" class="settings-current-avatar">
                     {% endif %}
@@ -74,7 +74,14 @@
                 <div class="answer-main">
                     <div class="answer-text">
                         <p>{{ answer.answer_text }}</p>
-                    </div>                    
+
+                        {% if answer.is_correct %}
+                            <span class="answer-correct-badge">
+                                <span class="answer-correct-badge-icon">✓</span>
+                                Правильный ответ
+                            </span>
+                        {% endif %}
+                    </div>          
                     <div class="answer-meta">                       
                         <div class="answer-like-wrapper">
                             <button

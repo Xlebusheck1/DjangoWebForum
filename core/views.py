@@ -175,6 +175,7 @@ class QuestionView(TemplateView):
             context.update({
                 'question': question_obj,
                 'answers': page_obj,
+                "answers_sort": sort,
                 'is_authenticated': is_authenticated,
                 'username': username,
                 'popular_tags': get_popular_tags()

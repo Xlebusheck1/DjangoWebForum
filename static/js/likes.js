@@ -108,9 +108,7 @@ function markCorrectAnswer(answer_id) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
-            // самый простой вариант — перезагрузить страницу,
-            // чтобы обновилась сортировка и метки
+        if (data.success) {            
             location.reload();
         }
     })

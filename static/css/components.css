@@ -173,8 +173,13 @@ textarea.form-control {
 }
 
 .like-btn--inactive {
+    color: #b0b0b0;  
+    opacity: 0.1;
+}
+
+.like-btn--inactive:hover {
     color: #e0245e;  
-    opacity: 0.6;
+    opacity: 0.1;
 }
 
 .like-btn--active {
