@@ -78,47 +78,40 @@ class LoginForm(forms.Form):
         return cleaned_data
         
 
-class SignupForm(PasswordChangeForm, forms.ModelForm):   
-
+class SignupForm(PasswordChangeForm, forms.ModelForm):
     class Meta:
         model = User
-        fields = ('username', 'email')
+        fields = ("username", "email")
         widgets = {
-            'username': TextInput(attrs={
-                'class': 'auth-input',
-                'placeholder': 'Имя пользователя',
-                'autocomplete': 'username',
+            "username": TextInput(attrs={
+                "class": "auth-input",
+                "placeholder": "Имя пользователя",
+                "autocomplete": "username",
             }),
-             'email': EmailInput(attrs={
-                'class': 'auth-input',
-                'placeholder': 'Email',
-                'autocomplete': 'email',
+            "email": EmailInput(attrs={
+                "class": "auth-input",
+                "placeholder": "Email",
+                "autocomplete": "email",
             }),
         }
         labels = {
-            'username': 'Имя пользователя',
-            'email': 'Email',
-        }          
+            "username": "Имя пользователя",
+            "email": "Email",
+        }
 
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if User.objects.filter(username=username).exists():
-            raise ValidationError('Пользователь с таким именем уже существует')
-        return username
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)        
+        self.fields["password1"].widget = PasswordInput(attrs={
+            "class": "auth-input",
+            "placeholder": "Пароль",
+            "autocomplete": "new-password",
+        })
+        self.fields["password2"].widget = PasswordInput(attrs={
+            "class": "auth-input",
+            "placeholder": "Повторите пароль",
+            "autocomplete": "new-password",
+        })
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if email and User.objects.filter(email=email).exists():
-            raise ValidationError('Пользователь с таким email уже существует')
-        return email
-        
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        password = self.cleaned_data['password1']
-        user.set_password(password) 
-        if commit:
-            user.save()
-        return user
 
 
 class QuestionForm(forms.Form):
