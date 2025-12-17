@@ -17,7 +17,7 @@ function toggleLike(question_id) {
     if (!btn) return;
 
     const currentlyLiked = btn.dataset.liked === 'true';
-    const nextIsLike = !currentlyLiked;   // true = ставим лайк, false = снимаем
+    const nextIsLike = !currentlyLiked;  
 
     fetch(`/api/question/${question_id}/like/`, {
         method: 'POST',
@@ -48,4 +48,49 @@ function toggleLike(question_id) {
         }
     })
     .catch(err => console.error('like toggle error:', err));
+}
+
+function toggleAnswerLike(answer_id) {
+    const ratingElement = document.getElementById(
+        `answer-${answer_id}-rating`
+    );
+    if (!ratingElement) return;
+
+    const btn = document.querySelector(
+        `button.like-answer-btn[data-answer-id="${answer_id}"]`
+    );
+    if (!btn) return;
+
+    const currentlyLiked = btn.dataset.liked === 'true';
+    const nextIsLike = !currentlyLiked;
+
+    fetch(`/api/answer/${answer_id}/like/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: new URLSearchParams({
+            pk: answer_id,
+            is_like: String(nextIsLike),
+        }),
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success && data.rating !== undefined) {
+            ratingElement.textContent = data.rating;
+            btn.dataset.liked = String(nextIsLike);
+
+            if (nextIsLike) {
+                btn.textContent = '💖';
+                btn.classList.add('like-btn--active');
+                btn.classList.remove('like-btn--inactive');
+            } else {
+                btn.textContent = '🤍';
+                btn.classList.add('like-btn--inactive');
+                btn.classList.remove('like-btn--active');
+            }
+        }
+    })
+    .catch(err => console.error('answer like toggle error:', err));
 }

@@ -25,7 +25,19 @@
                     {% endfor %}
                 </div>
                 <div class="question-full-stats">
-                    <span class="question-full-likes">❤️ {{ question.likes_count }}</span>
+                    <button
+                        type="button"
+                        class="like-btn {% if question.is_liked %}like-btn--active{% else %}like-btn--inactive{% endif %}"
+                        data-question-id="{{ question.id }}"
+                        data-liked="{{ question.is_liked|yesno:'true,false' }}"
+                        onclick="toggleLike({{ question.id }})">
+                        {% if question.is_liked %}💖{% else %}🤍{% endif %}
+                    </button>
+                    <span
+                        class="question-full-likes"
+                        id="question-{{ question.id }}-rating">
+                        {{ question.rating }}
+                    </span>
                 </div>
             </div>
         </div>
@@ -45,10 +57,21 @@
                         <p>{{ answer.answer_text }}</p>
                     </div>
                     <div class="answer-meta">
-                        <span class="answer-likes">❤️ {{ answer.likes_count }}</span>
-                        <div class="answer-checkbox">
-                            <input type="checkbox" id="answer-{{ answer.id }}" class="answer-correct-checkbox">
-                            <label for="answer-{{ answer.id }}" class="answer-checkbox-label">Correct answer</label>
+                        <div class="answer-like-wrapper">
+                            <button
+                                type="button"
+                                class="like-btn like-answer-btn {% if answer.is_liked %}like-btn--active{% else %}like-btn--inactive{% endif %}"
+                                data-answer-id="{{ answer.id }}"
+                                data-liked="{{ answer.is_liked|yesno:'true,false' }}"
+                            >
+                                {% if answer.is_liked %}💖{% else %}🤍{% endif %}
+                            </button>
+                            <span
+                                class="answer-likes"
+                                id="answer-{{ answer.id }}-rating"
+                            >
+                                {{ answer.likes_count }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -71,4 +94,16 @@
 <div class="right-column">
     {% include 'sidebar.html' %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.like-answer-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const answerId = btn.dataset.answerId;
+            toggleAnswerLike(answerId);
+        });
+    });
+});
+</script>
+
 {% endblock %}

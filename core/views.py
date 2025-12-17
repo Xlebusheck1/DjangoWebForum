@@ -2,7 +2,6 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.generic import TemplateView
-from django.db.models import Count
 from core.models import Question, Tag
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -13,7 +12,7 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.views import View
 from django.db.models import Count, Exists, OuterRef
-from .models import AnswerLike, QuestionLike
+from .models import Answer, AnswerLike, QuestionLike
 
 
 def paginate(objects_list, request, per_page=10):
@@ -143,7 +142,6 @@ class TagView(TemplateView):
         return context
 
 
-
 class QuestionView(TemplateView):
     template_name = 'core/question.html'
     
@@ -156,10 +154,17 @@ class QuestionView(TemplateView):
         try:
             question_obj = Question.objects.get(id=question_id)
             answers = question_obj.answer_set.annotate(
-                likes_count=Count('likes')
-            ).order_by('-likes_count', '-created_at')
+                likes_count=Count("likes"),
+                is_liked=Exists(
+                    AnswerLike.objects.filter(
+                        author=self.request.user,
+                        answer_id=OuterRef("pk"),
+                        is_like=True,
+                    )
+                )
+            ).order_by("-likes_count", "-created_at")
             page_obj = paginate(answers, self.request, 3)
-            
+                        
             context.update({
                 'question': question_obj,
                 'answers': page_obj,
@@ -365,24 +370,33 @@ class QuestionLikeAPIView(View):
 
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class AnswerLikeAPIView(View):
-    http_method_names = ['post']
+    http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        answer_id = request.POST.get('pk')
+        answer_id = request.POST.get("pk")
+        is_like = request.POST.get("is_like", "true") == "true"
+
         answer = get_object_or_404(Answer, pk=answer_id)
+
         if answer.author == request.user:
-            return JsonResponse({
-                'status' : 'true',
-                'error' : 'Вы являетесь автором ответа',
-                }, status=400)
-        
-        like, created = AnswerLike.objects.get_or_create(author=request.user, answer_id=answer_id)
-        answer.rating += 1
-        answer.save(update_fields=['rating'])
-        return JsonResponse({
-            'success' : True,
-            'id' : like.id,
-        }, status=201 if created else 200)   
-        
+            return JsonResponse({"success": False, "error": "Нельзя лайкать свой ответ"}, status=400)
+
+        like = AnswerLike.objects.filter(
+            author=request.user,
+            answer_id=answer_id,
+            is_like=True,
+        ).first()
+
+        if is_like:
+            if not like:
+                AnswerLike.objects.create(author=request.user, answer=answer, is_like=True)
+                answer.rating += 1
+        else:
+            if like:
+                like.delete()
+                answer.rating -= 1
+
+        answer.save(update_fields=["rating", "updated_at"])
+        return JsonResponse({"success": True, "rating": answer.rating}, status=200)

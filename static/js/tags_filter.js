@@ -3,13 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const tagsContainer = document.getElementById('ask-tagchoices');
     const hiddenInput = document.getElementById('id_tags');
     let selectedTagIds = new Set();
-
-    // Функция обновления скрытого поля
+    
     function updateHiddenInput() {
         hiddenInput.value = Array.from(selectedTagIds).join(',');
     }
-
-    // Клик по тегу - выбор/снятие
+    
     tagsContainer.addEventListener('click', e => {
         if (e.target.classList.contains('ask-tag')) {
             const tagId = e.target.getAttribute('data-tag-id');
@@ -23,8 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateHiddenInput();
         }
     });
-
-    // Фильтр тегов по поиску
+    
     search.addEventListener('input', () => {
         const val = search.value.toLowerCase();
         Array.from(tagsContainer.children).forEach(tagDiv => {

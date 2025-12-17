@@ -181,3 +181,19 @@ textarea.form-control {
     color: #e0245e;
     opacity: 1;
 }
+
+.answer-meta {
+    display: flex;
+    justify-content: flex-end; 
+}
+
+.answer-like-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.answer-likes {
+    color: #e0245e;
+    font-weight: 600;
+}

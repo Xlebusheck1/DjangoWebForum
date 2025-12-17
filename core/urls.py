@@ -13,7 +13,6 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('settings/password/', views.PasswordChangeView.as_view(), name='change_password'),
     
-    path('api/question/<int:pk>/like/', views.QuestionLikeAPIView.as_view(), name='question_like'),
-    #path('api/answer/<int:pk>/like', QuestionLike.DetailView.as_view(), name='like'),
-    #path('api/question/<int:pk>/dislike/', views.QuestionLike.as_view(), name='dislike'),
+    path("api/question/<int:question_id>/like/", views.QuestionLikeAPIView.as_view(), name="question_like_api"),
+    path("api/answer/<int:answer_id>/like/", views.AnswerLikeAPIView.as_view(), name="answer_like_api"),
 ]
