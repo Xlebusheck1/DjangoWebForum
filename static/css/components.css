@@ -218,3 +218,22 @@ textarea.form-control {
 .answer-correct-badge-icon {
     font-size: 0.9rem;
 }
+
+.messages {
+    max-width: 1200px;
+    margin: 10px auto 0;
+    padding: 0 20px;
+}
+
+.alert {
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.alert-success {
+    background: rgba(40,167,69,0.08);
+    border: 1px solid #28a745;
+    color: #1e7e34;
+}

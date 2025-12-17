@@ -7,55 +7,53 @@
 {% block title %}DevGuru - Вход{% endblock %}
 
 {% block content %}
-<div class="left-column">
-    <div class="login">        
+<div class="auth-container">
+  <div class="auth-card">
+    <h1 class="auth-title">Вход</h1>
+    <p class="auth-subtitle">Добро пожаловать! Введите свои данные для входа.</p>
 
-        <form class="login-form" method="POST" action="{% url 'login' %}">
-            {% csrf_token %}       
-            
-            {% if form.non_field_errors %}
-            <div class="alert alert-error">
-                {% for error in form.non_field_errors %}
-                    {{ error }}
-                {% endfor %}
-            </div>
-            {% endif %}
+    <form class="auth-form" method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
 
-            <div class="form-group">
-                <label for={{ form.username.id_for_label }} class="form-label">Username</label>
-                {{ form.username }}
+      {% if form.non_field_errors %}
+        <div class="auth-error">
+          {% for error in form.non_field_errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
 
-                {% if form.username.errors %}
-                <div style="color: red; font-size: 0.875rem;">
-                    {% for error in form.username.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
+      <div class="auth-group">
+        <label for="{{ form.username.id_for_label }}" class="auth-label">Имя пользователя</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+          <div class="form-error">
+            {% for error in form.username.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
 
-            <div class="form-group">
-                <label for={{ form.password.id_for_label }} class="form-label">Password</label>
-                {{ form.password }}
+      <div class="auth-group">
+        <label for="{{ form.password.id_for_label }}" class="auth-label">Пароль</label>
+        {{ form.password }}
+        {% if form.password.errors %}
+          <div class="form-error">
+            {% for error in form.password.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
 
-                {% if form.password.errors %}
-                <div style="color: red; font-size: 0.875rem;">
-                    {% for error in form.password.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-                {% endif %}
-                
-            </div>
+      <button type="submit" class="auth-submit">Войти</button>
 
-            <button type="submit" class="btn">Log in</button>            
-            <a href="{% url 'signup' %}" class="login-register-link">register new account</a>
-        </form>
-
-    </div>
-</div>
-
-<div class="right-column">
-    {% include 'sidebar.html' %}
+      <p class="auth-link">
+        Нет аккаунта?
+        <a href="{% url 'signup' %}">Зарегистрироваться</a>
+      </p>
+    </form>
+  </div>
 </div>
 {% endblock %}
