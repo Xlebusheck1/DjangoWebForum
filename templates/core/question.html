@@ -121,10 +121,24 @@
 
     <div class="your-answer">
         <h3 class="your-answer-title">Ваш ответ</h3>
-        <form class="your-answer-form">
-            <textarea class="form-textarea" placeholder="Напишите ваш ответ здесь..." rows="8"></textarea>
-            <button type="submit" class="btn btn--submit">Отправить ответ</button>
-        </form>
+        <div class="your-answer">
+        <h3 class="your-answer-title">Ваш ответ</h3>
+        {% if user.is_authenticated %}
+            <form class="your-answer-form" method="post">
+                {% csrf_token %}
+                {{ answer_form.non_field_errors }}
+                {{ answer_form.answer_text.errors }}
+                <textarea
+                    name="answer_text"
+                    class="form-control"
+                    rows="6"
+                    placeholder="Напишите развёрнутый ответ..."></textarea>
+                <button type="submit" class="btn btn--primary">Отправить</button>
+            </form>
+        {% else %}
+            <p>Чтобы оставить ответ, <a href="{% url 'login' %}">войдите</a>.</p>
+        {% endif %}
+    </div>
     </div>
 </div>
 

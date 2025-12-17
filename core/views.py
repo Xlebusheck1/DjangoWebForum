@@ -6,7 +6,7 @@ from core.models import Question, Tag
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
-from core.forms import LoginForm, QuestionForm, SignupForm, SettingsForm, PasswordChangeForm
+from core.forms import LoginForm, QuestionForm, SignupForm, SettingsForm, PasswordChangeForm, AnswerForm
 from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
@@ -151,7 +151,7 @@ class QuestionView(TemplateView):
         username = self.request.user.username if is_authenticated else ""
         question_id = kwargs.get("question_id")
 
-        try:            
+        try:
             question_qs = Question.objects.annotate(
                 is_liked=Exists(
                     QuestionLike.objects.filter(
@@ -182,18 +182,41 @@ class QuestionView(TemplateView):
 
             page_obj = paginate(answers, self.request, 3)
 
-            context.update({
-                "question": question_obj,
-                "answers": page_obj,
-                "answers_sort": sort,
-                "is_authenticated": is_authenticated,
-                "username": username,
-                "popular_tags": get_popular_tags(),
-            })
+            context.update(
+                {
+                    "question": question_obj,
+                    "answers": page_obj,
+                    "answers_sort": sort,
+                    "is_authenticated": is_authenticated,
+                    "username": username,
+                    "popular_tags": get_popular_tags(),
+                    "answer_form": AnswerForm(),  
+                }
+            )
         except Question.DoesNotExist:
             pass
 
         return context
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect("login")
+
+        question_id = kwargs.get("question_id")
+        question = get_object_or_404(Question, id=question_id)
+
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            Answer.objects.create(
+                question=question,
+                author=request.user,
+                answer_text=form.cleaned_data["answer_text"],
+            )
+            return redirect("question", question_id=question_id)
+       
+        context = self.get_context_data(question_id=question_id)
+        context["answer_form"] = form
+        return self.render_to_response(context)
     
 
 @method_decorator(login_required, name='dispatch')

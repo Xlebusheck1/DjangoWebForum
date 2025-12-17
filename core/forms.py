@@ -1,7 +1,7 @@
 from django import forms
 from django.forms.widgets import PasswordInput, TextInput, EmailInput
 from django.contrib.auth import authenticate
-from core.models import Question, Tag, User
+from core.models import Question, Tag, User, Answer
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
@@ -166,4 +166,14 @@ class SettingsForm(forms.ModelForm):
             'avatar': 'Аватар',
         }
 
+
+class AnswerForm(forms.ModelForm):
+    class Meta:
+        model = Answer
+        fields = ["answer_text"]   
+        widgets = {
+            "answer_text": forms.Textarea(
+                attrs={"class": "form-textarea", "rows": 8, "placeholder": "Ваш ответ..."}
+            )
+        }
 
