@@ -143,17 +143,27 @@ class TagView(TemplateView):
 
 
 class QuestionView(TemplateView):
-    template_name = 'core/question.html'
-    
+    template_name = "core/question.html"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         is_authenticated = self.request.user.is_authenticated
-        username = self.request.user.username if is_authenticated else ''
-        question_id = kwargs.get('question_id')
-        
-        try:
-            question_obj = Question.objects.get(id=question_id)
-            sort = self.request.GET.get("sort", "best") 
+        username = self.request.user.username if is_authenticated else ""
+        question_id = kwargs.get("question_id")
+
+        try:            
+            question_qs = Question.objects.annotate(
+                is_liked=Exists(
+                    QuestionLike.objects.filter(
+                        author=self.request.user,
+                        question_id=OuterRef("pk"),
+                        is_like=True,
+                    )
+                )
+            )
+            question_obj = question_qs.get(id=question_id)
+
+            sort = self.request.GET.get("sort", "best")
             base_qs = question_obj.answer_set.annotate(
                 likes_count=Count("likes"),
                 is_liked=Exists(
@@ -167,22 +177,22 @@ class QuestionView(TemplateView):
 
             if sort == "new":
                 answers = base_qs.order_by("-is_correct", "-created_at")
-            else:  
+            else:
                 answers = base_qs.order_by("-is_correct", "-likes_count", "-created_at")
 
             page_obj = paginate(answers, self.request, 3)
-                        
+
             context.update({
-                'question': question_obj,
-                'answers': page_obj,
+                "question": question_obj,
+                "answers": page_obj,
                 "answers_sort": sort,
-                'is_authenticated': is_authenticated,
-                'username': username,
-                'popular_tags': get_popular_tags()
+                "is_authenticated": is_authenticated,
+                "username": username,
+                "popular_tags": get_popular_tags(),
             })
         except Question.DoesNotExist:
             pass
-            
+
         return context
     
 
@@ -340,8 +350,7 @@ class QuestionLikeAPIView(View):
     http_method_names = ['post']
 
     def post(self, request, *args, **kwargs):
-        question_id = request.POST.get('pk')
-        # true = поставить лайк, false = снять лайк
+        question_id = request.POST.get('pk')        
         is_like = request.POST.get('is_like', 'true') == 'true'
         question = get_object_or_404(Question, pk=question_id)
 
