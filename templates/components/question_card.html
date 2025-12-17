@@ -1,6 +1,11 @@
+{% load static %}
 <div class="question">
     <div class="question-avatar">
-        <img src="#">
+    {% if question.author.avatar %}
+        <img src="{{ question.author.avatar.url }}" alt="avatar">
+    {% else %}
+        <img src="{% static '/avatars/default-avatar.png' %}" alt="avatar">
+    {% endif %}
     </div>
     <div class="question-content">
         <a href="{% url 'question' question.id %}" class="question-title">

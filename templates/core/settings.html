@@ -11,7 +11,7 @@
 <div class="left-column">
     <div class="settings">
         <h2 class="settings-title">Настройки: {{ username }}</h2>
-        <form method="POST" action="{% url 'settings' %}" class="settings-form">
+        <form method="POST" action="{% url 'settings' %}" class="settings-form" enctype="multipart/form-data">
             {% csrf_token %}
 
             {% if form.non_field_errors %}
@@ -27,7 +27,7 @@
                     {% if request.user.avatar %}
                         <img src="{{ request.user.avatar.url }}" alt="Текущий аватар" class="settings-current-avatar">
                     {% else %}
-                        <img src="{% static 'img/default-avatar.png' %}" alt="Нет аватара" class="settings-current-avatar">
+                        <img src="{% static '/avatars/default-avatar.png' %}" alt="Нет аватара" class="settings-current-avatar">
                     {% endif %}
                 </div>
                 <div class="settings-avatar-upload">

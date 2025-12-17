@@ -10,8 +10,12 @@
 {% block content %}
 <div class="left-column">
     <div class="question-full">
-        <div class="question-full-avatar">
-            <img src="https://via.placeholder.com/60">
+        <div class="question-avatar">
+        {% if question.author.avatar %}
+            <img src="{{ question.author.avatar.url }}" alt="avatar">
+        {% else %}
+            <img src="{% static '/avatars/default-avatar.png' %}" alt="avatar">
+        {% endif %}
         </div>
         <div class="question-full-content">
             <h2 class="question-full-title">{{ question.title }}</h2>
@@ -50,7 +54,11 @@
         <div class="answer">
             <div class="answer-content">
                 <div class="answer-avatar">
-                    <img src="#">
+                    {% if request.user.avatar %}
+                        <img src="{{ request.user.avatar.url }}" alt="Текущий аватар" class="settings-current-avatar">
+                    {% else %}
+                        <img src="{% static '/avatars/default-avatar.png' %}" alt="Нет аватара" class="settings-current-avatar">
+                    {% endif %}
                 </div>
                 <div class="answer-main">
                     <div class="answer-text">
