@@ -1,3 +1,5 @@
+{% load static %}
+
 <div class="sidebar-block">
     <h3 class="sidebar-block-title">Популярные теги</h3>
     <div class="sidebar-tags-container">
@@ -12,21 +14,18 @@
 <div class="sidebar-block">
     <h3 class="sidebar-block-title">Лучшие пользователи</h3>
     <div class="sidebar-users-list">
-        <a href="#" class="sidebar-user-profile">
-            <img src="#" alt="Аватар" class="sidebar-user-avatar">
-            <span>Ignat Vaschilo</span>
-        </a>
-        <a href="#" class="sidebar-user-profile">
-            <img src="#" alt="Аватар" class="sidebar-user-avatar">
-            <span>Dr.Penis</span>
-        </a>
-        <a href="#" class="sidebar-user-profile">
-            <img src="#" alt="Аватар" class="sidebar-user-avatar">
-            <span>Annihilator3000</span>
-        </a>
-        <a href="#" class="sidebar-user-profile">
-            <img src="#" alt="Аватар" class="sidebar-user-avatar">
-            <span>OOO"Бнал"</span>
-        </a>
+        {% for user in top_users %}
+            <a href="#"
+               class="sidebar-user-profile">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="sidebar-user-avatar">
+                {% else %}
+                    <img src="{% static 'avatars/default-avatar.png' %}" alt="{{ user.username }}" class="sidebar-user-avatar">
+                {% endif %}
+                <span>{{ user.username }}</span>
+            </a>
+        {% empty %}
+            <p>Пока нет данных.</p>
+        {% endfor %}
     </div>
 </div>

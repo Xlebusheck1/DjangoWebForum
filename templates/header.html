@@ -15,8 +15,7 @@
     {% if user.is_authenticated %}            
         <button class="header-ask-btn" onclick="location.href='{% url 'ask' %}'">ASK</button>
         <div class="header-user-menu">
-            
-            
+                        
             {% if user.avatar %}
                 <img src="{{ user.avatar.url }}" alt="avatar" class="header-user-avatar">
             {% else %}
@@ -24,6 +23,8 @@
             {% endif %}
             
             <span class="header-user-name">{{ user.username }}</span>
+
+            <a href="{% url 'my_questions' %}" class="header-user-link">my questions</a>
 
             <a href="{% url 'settings' %}" class="header-user-link">settings</a>
 
@@ -35,7 +36,7 @@
         </div>
     {% else %}
         <button class="header-ask-btn" onclick="location.href='{% url 'signup' %}'">ASK</button>
-        <div class="header-user-menu">
+        <div class="header-user-menu">            
             <a href="{% url 'login' %}" class="header-user-link">log in</a>
             <a href="{% url 'signup' %}" class="header-user-link">register</a>
         </div>

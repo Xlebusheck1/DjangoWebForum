@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 
+
 class DefaultModel(models.Model):
     class Meta:
         abstract = True
@@ -13,6 +14,7 @@ class DefaultModel(models.Model):
 
 class User(AbstractUser):
     avatar = models.ImageField(upload_to='avatars', null=True, blank=True)
+    rating = models.PositiveIntegerField(default=0, verbose_name="Рейтинг")
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'

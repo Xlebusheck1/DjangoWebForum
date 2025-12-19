@@ -7,13 +7,42 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from core.forms import LoginForm, QuestionForm, SignupForm, SettingsForm, PasswordChangeForm, AnswerForm
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, get_user_model
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.views import View
 from django.db.models import Count, Exists, OuterRef, Q
 from .models import Answer, AnswerLike, QuestionLike
+User = get_user_model()
 
+def search_order_api(request):
+    q = request.GET.get("q", "").strip()
+    if not q:
+        return JsonResponse({"order": []})
+
+    user = request.user
+    
+    current_sort = request.GET.get("sort", "new")
+    tag_name = request.GET.get("tag") 
+
+    qs = Question.objects.all()
+
+    if tag_name:
+        qs = qs.filter(tags__name=tag_name)
+
+    if current_sort == "hot":
+        qs = qs.annotate(likes_count=Count("likes")).order_by("-likes_count", "-created_at")
+    else:
+        qs = qs.order_by("-created_at")
+   
+    qs = qs.filter(
+        Q(title__icontains=q) |
+        Q(detailed__icontains=q)
+    )
+   
+    ids = list(qs.values_list("id", flat=True))
+
+    return JsonResponse({"order": ids})
 
 def paginate(objects_list, request, per_page=10):
     paginator = Paginator(objects_list, per_page)
@@ -33,18 +62,19 @@ def get_popular_tags():
         questions_count=Count('question')
     ).order_by('-questions_count')[:10]
 
+def get_top_users(limit=5):
+    return User.objects.order_by("-rating")[:limit]
+
 
 @method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class IndexView(TemplateView):
     template_name = 'core/index.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        is_authenticated = self.request.user.is_authenticated
-        username = self.request.user.username if is_authenticated else ''
-
         user = self.request.user
+
         questions = (
             Question.objects
             .all()
@@ -63,10 +93,13 @@ class IndexView(TemplateView):
 
         context.update({
             'questions': page_obj,
-            'is_authenticated': is_authenticated,
-            'username': username,
+            'is_authenticated': user.is_authenticated,
+            'username': user.username if user.is_authenticated else '',
             'current_sort': 'new',
-            'popular_tags': get_popular_tags()
+            'popular_tags': Tag.objects.annotate(
+                questions_count=Count('question')
+            ).order_by('-questions_count')[:10],
+            'top_users': get_top_users() 
         })
         return context
 
@@ -101,7 +134,8 @@ class HotView(TemplateView):
             'is_authenticated': is_authenticated,
             'username': username,
             'current_sort': 'hot',
-            'popular_tags': get_popular_tags()
+            'popular_tags': get_popular_tags(),
+            'top_users': get_top_users(),
         })
         return context
 
@@ -135,9 +169,10 @@ class TagView(TemplateView):
         context.update({
             'questions': page_obj,
             'tag_name': tag_name,
-            'is_authenticated': is_authenticated,
+            'is _authenticated': is_authenticated,
             'username': username,
-            'popular_tags': get_popular_tags()
+            'popular_tags': get_popular_tags(),
+            'top_users': get_top_users(),
         })
         return context
 
@@ -450,46 +485,66 @@ class MarkCorrectAnswerAPIView(View):
         answer_id = request.POST.get("pk")
         answer = get_object_or_404(Answer, pk=answer_id)
         question = answer.question
-        
+
         if question.author != request.user:
             return JsonResponse(
                 {"success": False, "error": "Нет прав"},
                 status=403,
             )
+        
+        previous_correct = Answer.objects.filter(
+            question=question,
+            is_correct=True,
+        ).exclude(pk=answer.pk).first()
        
         Answer.objects.filter(question=question, is_correct=True).update(is_correct=False)
+      
+        if previous_correct:
+            prev_author = previous_correct.author
+            if prev_author.rating > 0:
+                prev_author.rating -= 1
+                prev_author.save(update_fields=["rating"])
         
         answer.is_correct = True
         answer.save(update_fields=["is_correct", "updated_at"])
 
+        ans_author = answer.author
+        ans_author.rating += 1
+        ans_author.save(update_fields=["rating"])
+
         return JsonResponse({"success": True}, status=200)
     
 
-def search_order_api(request):
-    q = request.GET.get("q", "").strip()
-    if not q:
-        return JsonResponse({"order": []})
+@method_decorator(login_required, name="dispatch")
+class MyQuestionsView(TemplateView):
+    template_name = "core/my_questions.html"
 
-    user = request.user
-    
-    current_sort = request.GET.get("sort", "new")
-    tag_name = request.GET.get("tag") 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
 
-    qs = Question.objects.all()
+        questions = (
+            Question.objects
+            .filter(author=user)
+            .annotate(
+                is_liked=Exists(
+                    QuestionLike.objects.filter(
+                        author=user,
+                        question_id=OuterRef("pk"),
+                        is_like=True,
+                    )
+                )
+            )
+            .order_by("-created_at")
+        )
 
-    if tag_name:
-        qs = qs.filter(tags__name=tag_name)
+        page_obj = paginate(questions, self.request, 5)
 
-    if current_sort == "hot":
-        qs = qs.annotate(likes_count=Count("likes")).order_by("-likes_count", "-created_at")
-    else:
-        qs = qs.order_by("-created_at")
-   
-    qs = qs.filter(
-        Q(title__icontains=q) |
-        Q(detailed__icontains=q)
-    )
-   
-    ids = list(qs.values_list("id", flat=True))
-
-    return JsonResponse({"order": ids})
+        context.update({
+            "questions": page_obj,
+            "is_authenticated": True,
+            "username": user.username,
+            "current_sort": "my",
+            "popular_tags": get_popular_tags(),
+        })
+        return context
