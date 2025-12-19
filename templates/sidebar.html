@@ -24,14 +24,7 @@
                     <img src="{% static 'avatars/default-avatar.png' %}" alt="{{ user.username }}" class="sidebar-user-avatar">
                 {% endif %}
                 <span class="sidebar-user-name">{{ user.username }}</span>
-                <span class="sidebar-user-rating">{{ user.rating }}</span>
-                {% if diff > 0 %}
-                    <span class="sidebar-user-trend sidebar-user-trend--up">+{{ diff }}</span>
-                {% elif diff < 0 %}
-                    <span class="sidebar-user-trend sidebar-user-trend--down">{{ diff }}</span>
-                {% else %}
-                    <span class="sidebar-user-trend sidebar-user-trend--same">•</span>
-                {% endif %}
+                <span class="sidebar-user-rating">rating: {{ user.rating }}</span>                
             </a>
         {% empty %}
             <p>Пока нет данных.</p>
