@@ -11,7 +11,7 @@ from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.views import View
-from django.db.models import Count, Exists, OuterRef
+from django.db.models import Count, Exists, OuterRef, Q
 from .models import Answer, AnswerLike, QuestionLike
 
 
@@ -463,3 +463,33 @@ class MarkCorrectAnswerAPIView(View):
         answer.save(update_fields=["is_correct", "updated_at"])
 
         return JsonResponse({"success": True}, status=200)
+    
+
+def search_order_api(request):
+    q = request.GET.get("q", "").strip()
+    if not q:
+        return JsonResponse({"order": []})
+
+    user = request.user
+    
+    current_sort = request.GET.get("sort", "new")
+    tag_name = request.GET.get("tag") 
+
+    qs = Question.objects.all()
+
+    if tag_name:
+        qs = qs.filter(tags__name=tag_name)
+
+    if current_sort == "hot":
+        qs = qs.annotate(likes_count=Count("likes")).order_by("-likes_count", "-created_at")
+    else:
+        qs = qs.order_by("-created_at")
+   
+    qs = qs.filter(
+        Q(title__icontains=q) |
+        Q(detailed__icontains=q)
+    )
+   
+    ids = list(qs.values_list("id", flat=True))
+
+    return JsonResponse({"order": ids})

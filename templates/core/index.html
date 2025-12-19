@@ -16,11 +16,13 @@ DevGuru - Главная
         </a>
     </div>
 
+    <div id="questions-container">
     {% for question in questions %}
         {% include 'components/question_card.html' %}
     {% endfor %}
 
     {% include 'pagination.html' with page=questions %}
+     </div>
 </div>
 
 <div class="right-column">

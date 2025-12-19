@@ -1,8 +1,16 @@
 {% load static %}
 <header class="header">
     <h1 class="header-logo" onclick="location.href='{% url 'index' %}'">DevGuru</h1>
-    <form class="header-search-form">
-        <input type="text" class="header-search-input" placeholder="Поиск по сайту...">
+
+    <form action="" method="get" class="header-search-form" onsubmit="return false;">
+        <input
+            type="text"
+            id="header-search-input"
+            name="q"
+            class="header-search-input"
+            placeholder="Поиск по сайту..."
+            autocomplete="off">
+        <button type="button" class="header-ask-btn">ASK</button>
     </form>
     
     {% if user.is_authenticated %}            

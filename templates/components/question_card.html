@@ -1,5 +1,5 @@
 {% load static %}
-<div class="question">
+<div class="question" data-question-id="{{ question.id }}">
     <div class="question-avatar">
     {% if question.author.avatar %}
         <img src="{{ question.author.avatar.url }}" alt="avatar">

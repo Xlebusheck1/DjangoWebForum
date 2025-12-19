@@ -15,5 +15,6 @@ urlpatterns = [
     
     path("api/question/<int:question_id>/like/", views.QuestionLikeAPIView.as_view(), name="question_like_api"),
     path("api/answer/<int:answer_id>/like/", views.AnswerLikeAPIView.as_view(), name="answer_like_api"),
-    path("api/answer/mark-correct/", views.MarkCorrectAnswerAPIView.as_view(), name="mark_correct_answer_api",),
+    path("api/answer/mark-correct/", views.MarkCorrectAnswerAPIView.as_view(), name="mark_correct_answer_api"),
+    path("api/search-order/", views.search_order_api, name="search_order_api"),
 ]
