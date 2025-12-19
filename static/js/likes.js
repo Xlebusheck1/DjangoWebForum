@@ -1,8 +1,8 @@
 function getCookie(name) {
     const value = document.cookie
-        .split('; ')
-        .find(row => row.startsWith(name + '='));
-    return value ? decodeURIComponent(value.split('=')[1]) : null;
+        .split("; ")
+        .find((row) => row.startsWith(name + "="));
+    return value ? decodeURIComponent(value.split("=")[1]) : null;
 }
 
 function toggleLike(question_id) {
@@ -12,42 +12,47 @@ function toggleLike(question_id) {
     if (!ratingElement) return;
 
     const btn = document.querySelector(
-        `button.like-btn[data-question-id="${question_id}"]`
+        `button.like-question-btn[data-question-id="${question_id}"]`
     );
     if (!btn) return;
 
-    const currentlyLiked = btn.dataset.liked === 'true';
-    const nextIsLike = !currentlyLiked;  
+    const icon = btn.querySelector("i");
+    if (!icon) return;
+
+    const currentlyLiked = btn.dataset.liked === "true";
+    const nextIsLike = !currentlyLiked;
 
     fetch(`/api/question/${question_id}/like/`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'X-Requested-With': 'XMLHttpRequest',
+            "X-CSRFToken": getCookie("csrftoken"),
+            "X-Requested-With": "XMLHttpRequest",
         },
         body: new URLSearchParams({
             pk: question_id,
             is_like: String(nextIsLike),
         }),
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success && data.rating !== undefined) {
-            ratingElement.textContent = data.rating;
-            btn.dataset.liked = String(nextIsLike);
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.success && data.rating !== undefined) {
+                ratingElement.textContent = data.rating;
+                btn.dataset.liked = String(nextIsLike);
 
-            if (nextIsLike) {
-                btn.textContent = '💖';
-                btn.classList.add('like-btn--active');
-                btn.classList.remove('like-btn--inactive');
-            } else {
-                btn.textContent = '🤍';
-                btn.classList.add('like-btn--inactive');
-                btn.classList.remove('like-btn--active');
+                if (nextIsLike) {
+                    btn.classList.add("like-btn--active");
+                    btn.classList.remove("like-btn--inactive");
+                    icon.classList.remove("far");
+                    icon.classList.add("fas");
+                } else {
+                    btn.classList.add("like-btn--inactive");
+                    btn.classList.remove("like-btn--active");
+                    icon.classList.remove("fas");
+                    icon.classList.add("far");
+                }
             }
-        }
-    })
-    .catch(err => console.error('like toggle error:', err));
+        })
+        .catch((err) => console.error("like toggle error:", err));
 }
 
 function toggleAnswerLike(answer_id) {
@@ -61,38 +66,43 @@ function toggleAnswerLike(answer_id) {
     );
     if (!btn) return;
 
-    const currentlyLiked = btn.dataset.liked === 'true';
+    const icon = btn.querySelector("i");
+    if (!icon) return;
+
+    const currentlyLiked = btn.dataset.liked === "true";
     const nextIsLike = !currentlyLiked;
 
     fetch(`/api/answer/${answer_id}/like/`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'X-Requested-With': 'XMLHttpRequest',
+            "X-CSRFToken": getCookie("csrftoken"),
+            "X-Requested-With": "XMLHttpRequest",
         },
         body: new URLSearchParams({
             pk: answer_id,
             is_like: String(nextIsLike),
         }),
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success && data.rating !== undefined) {
-            ratingElement.textContent = data.rating;
-            btn.dataset.liked = String(nextIsLike);
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.success && data.rating !== undefined) {
+                ratingElement.textContent = data.rating;
+                btn.dataset.liked = String(nextIsLike);
 
-            if (nextIsLike) {
-                btn.textContent = '💖';
-                btn.classList.add('like-btn--active');
-                btn.classList.remove('like-btn--inactive');
-            } else {
-                btn.textContent = '🤍';
-                btn.classList.add('like-btn--inactive');
-                btn.classList.remove('like-btn--active');
+                if (nextIsLike) {
+                    btn.classList.add("like-btn--active");
+                    btn.classList.remove("like-btn--inactive");
+                    icon.classList.remove("far");
+                    icon.classList.add("fas");
+                } else {
+                    btn.classList.add("like-btn--inactive");
+                    btn.classList.remove("like-btn--active");
+                    icon.classList.remove("fas");
+                    icon.classList.add("far");
+                }
             }
-        }
-    })
-    .catch(err => console.error('answer like toggle error:', err));
+        })
+        .catch((err) => console.error("answer like toggle error:", err));
 }
 
 function markCorrectAnswer(answer_id) {
@@ -106,17 +116,31 @@ function markCorrectAnswer(answer_id) {
             pk: answer_id,
         }),
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {            
-            location.reload();
-        }
-    })
-    .catch(err => console.error("mark correct error:", err));
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch((err) => console.error("mark correct error:", err));
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".answer-mark-correct-btn").forEach(btn => {
+document.addEventListener("DOMContentLoaded", () => {    
+    document.querySelectorAll(".like-answer-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const answerId = btn.dataset.answerId;
+            toggleAnswerLike(answerId);
+        });
+    });
+    
+    document.querySelectorAll(".like-question-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const qId = btn.dataset.questionId;
+            toggleLike(qId);
+        });
+    });
+    
+    document.querySelectorAll(".answer-mark-correct-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
             const answerId = btn.dataset.answerId;
             markCorrectAnswer(answerId);

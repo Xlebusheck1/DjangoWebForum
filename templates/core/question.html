@@ -31,11 +31,10 @@
                 <div class="question-full-stats">
                     <button
                         type="button"
-                        class="like-btn {% if question.is_liked %}like-btn--active{% else %}like-btn--inactive{% endif %}"
+                        class="like-btn like-question-btn {% if question.is_liked %}like-btn--active{% else %}like-btn--inactive{% endif %}"
                         data-question-id="{{ question.id }}"
-                        data-liked="{{ question.is_liked|yesno:'true,false' }}"
-                        onclick="toggleLike({{ question.id }})">
-                        {% if question.is_liked %}💖{% else %}🤍{% endif %}
+                        data-liked="{% if question.is_liked %}true{% else %}false{% endif %}">
+                        <i class="{% if question.is_liked %}fas{% else %}far{% endif %} fa-heart"></i>
                     </button>
                     <span
                         class="question-full-likes"
@@ -88,13 +87,13 @@
                                 type="button"
                                 class="like-btn like-answer-btn {% if answer.is_liked %}like-btn--active{% else %}like-btn--inactive{% endif %}"
                                 data-answer-id="{{ answer.id }}"
-                                data-liked="{{ answer.is_liked|yesno:'true,false' }}">
-                                {% if answer.is_liked %}💖{% else %}🤍{% endif %}
+                                data-liked="{% if answer.is_liked %}true{% else %}false{% endif %}">
+                                <i class="{% if answer.is_liked %}fas{% else %}far{% endif %} fa-heart"></i>
                             </button>
                             <span
                                 class="answer-likes"
                                 id="answer-{{ answer.id }}-rating">
-                                {{ answer.likes_count }}
+                                {{ answer.rating }}
                             </span>
                         </div>
 
@@ -145,16 +144,5 @@
 <div class="right-column">
     {% include 'sidebar.html' %}
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.like-answer-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const answerId = btn.dataset.answerId;
-            toggleAnswerLike(answerId);
-        });
-    });
-});
-</script>
 
 {% endblock %}

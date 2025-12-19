@@ -168,39 +168,21 @@ textarea.form-control {
     border: none;
     background: transparent;
     cursor: pointer;
-    font-size: 22px;
-    padding: 0 4px;
+    padding: 0;
 }
 
-.like-btn--inactive {
-    color: #b0b0b0;  
-    opacity: 0.1;
+.like-btn i {
+    font-size: 20px;
+    color: #4d4d4d;              
+    transition: color 0.2s;
 }
 
-.like-btn--inactive:hover {
-    color: #e0245e;  
-    opacity: 0.1;
+.like-btn--active i {
+    color: #e0245e;           
 }
 
-.like-btn--active {
-    color: #e0245e;
-    opacity: 1;
-}
-
-.answer-meta {
-    display: flex;
-    justify-content: flex-end; 
-}
-
-.answer-like-wrapper {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.answer-likes {
-    color: #e0245e;
-    font-weight: 600;
+.like-btn--inactive i:hover {
+    color: #e0245e;          
 }
 
 .answer-correct-badge {

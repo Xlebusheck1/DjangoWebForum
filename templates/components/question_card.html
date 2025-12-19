@@ -21,11 +21,10 @@
             <div class="question-stats">
                 <button
                     type="button"
-                    class="like-btn {% if question.is_liked %}like-btn--active{% else %}like-btn--inactive{% endif %}"
+                    class="like-btn like-question-btn {% if question.is_liked %}like-btn--active{% else %}like-btn--inactive{% endif %}"
                     data-question-id="{{ question.id }}"
-                    data-liked="{% if question.is_liked %}true{% else %}false{% endif %}"
-                    onclick="toggleLike({{ question.id }})">
-                    {% if question.is_liked %}💖{% else %}🤍{% endif %}
+                    data-liked="{% if question.is_liked %}true{% else %}false{% endif %}">
+                    <i class="{% if question.is_liked %}fas{% else %}far{% endif %} fa-heart"></i>
                 </button>
 
                 <span id="question-{{ question.id }}-rating"
