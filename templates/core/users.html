@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}DevGuru - Пользователи{% endblock %}
+
+{% block content %}
+<div class="left-column">
+    <div class="sidebar-block">
+        <h3 class="sidebar-block-title">Пользователи</h3>
+
+        {% for user, pos, diff in users_page %}
+            {% include "components/user_card.html" %}
+        {% empty %}
+            <p>Пользователи не найдены.</p>
+        {% endfor %}
+
+        {% include "pagination.html" with page=users_page %}
+    </div>
+</div>
+
+{% endblock %}

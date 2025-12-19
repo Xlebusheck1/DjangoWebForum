@@ -15,6 +15,18 @@ from django.db.models import Count, Exists, OuterRef, Q
 from .models import Answer, AnswerLike, QuestionLike
 User = get_user_model()
 
+def recalculate_user_ranks():
+    users = User.objects.order_by("-rating", "id")
+    current_rank = 1
+    to_update = []
+    for u in users:
+        if u.rank != current_rank:
+            u.rank = current_rank
+            to_update.append(u)
+        current_rank += 1
+    if to_update:
+        User.objects.bulk_update(to_update, ["rank"])
+
 def search_order_api(request):
     q = request.GET.get("q", "").strip()
     if not q:
@@ -63,7 +75,16 @@ def get_popular_tags():
     ).order_by('-questions_count')[:10]
 
 def get_top_users(limit=5):
-    return User.objects.order_by("-rating")[:limit]
+    users = list(User.objects.order_by("-rating", "id"))
+    top = users[:limit]
+
+    result = []
+    for index, user in enumerate(top, start=1):
+        current_rank = index
+        old_rank = user.rank or current_rank
+        diff = old_rank - current_rank 
+        result.append((user, current_rank, diff))
+    return result
 
 
 @method_decorator(never_cache, name='dispatch')
@@ -485,20 +506,20 @@ class MarkCorrectAnswerAPIView(View):
         answer_id = request.POST.get("pk")
         answer = get_object_or_404(Answer, pk=answer_id)
         question = answer.question
-
+        
         if question.author != request.user:
             return JsonResponse(
                 {"success": False, "error": "Нет прав"},
                 status=403,
             )
-        
+       
         previous_correct = Answer.objects.filter(
             question=question,
             is_correct=True,
         ).exclude(pk=answer.pk).first()
-       
+    
         Answer.objects.filter(question=question, is_correct=True).update(is_correct=False)
-      
+        
         if previous_correct:
             prev_author = previous_correct.author
             if prev_author.rating > 0:
@@ -507,10 +528,12 @@ class MarkCorrectAnswerAPIView(View):
         
         answer.is_correct = True
         answer.save(update_fields=["is_correct", "updated_at"])
-
+        
         ans_author = answer.author
         ans_author.rating += 1
         ans_author.save(update_fields=["rating"])
+        
+        recalculate_user_ranks()
 
         return JsonResponse({"success": True}, status=200)
     
@@ -547,4 +570,28 @@ class MyQuestionsView(TemplateView):
             "current_sort": "my",
             "popular_tags": get_popular_tags(),
         })
+        return context
+    
+
+class UsersView(TemplateView):
+    template_name = "core/users.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        users_qs = User.objects.order_by("-rating", "id")
+        users_list = list(users_qs)
+      
+        rows = []
+        for index, user in enumerate(users_list, start=1):
+            current_rank = index
+            old_rank = user.rank or current_rank
+            diff = old_rank - current_rank
+            rows.append((user, current_rank, diff))
+
+        paginator = Paginator(rows, 20)
+        page_number = self.request.GET.get("page", 1)
+        page_obj = paginator.get_page(page_number)
+
+        context["users_page"] = page_obj
         return context

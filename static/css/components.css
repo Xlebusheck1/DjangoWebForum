@@ -219,3 +219,87 @@ textarea.form-control {
     border: 1px solid #28a745;
     color: #1e7e34;
 }
+
+.sidebar-user-rating {
+    margin-left: 4px;
+    font-weight: 600;
+}
+
+.sidebar-user-trend {
+    margin-left: 4px;
+    font-size: 12px;
+}
+
+.sidebar-user-trend--up {
+    color: #16a34a;
+}
+
+.sidebar-user-trend--down {
+    color: #dc2626; 
+}
+
+.sidebar-user-trend--same {
+    color: #9ca3af; 
+}
+
+.user-card {
+    background: #ffffff;
+    border: 1px solid #e8e4dd;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+}
+
+.user-card-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-card-avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #e8e4dd;
+}
+
+.user-card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.user-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-card-name {
+    font-weight: 600;
+    color: #2c2c2c;
+}
+
+.user-card-position {
+    font-size: 0.85rem;
+    color: #5c5c5c;
+}
+
+.user-card-meta {
+    display: flex;
+    align-items: center;
+}
+
+.user-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-card-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

@@ -1,0 +1,23 @@
+{% load static %}
+
+<div class="user-card">
+    <div class="user-card-main">
+        <div class="user-card-avatar">
+            {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" alt="{{ user.username }}">
+            {% else %}
+                <img src="{% static 'avatars/default-avatar.png' %}" alt="{{ user.username }}">
+            {% endif %}
+        </div>
+        <div class="user-card-content">
+            <div class="user-card-header">
+                <span class="user-card-name">{{ user.username }}</span>
+
+                <div class="user-card-header-right">
+                    <span class="sidebar-user-rating">★ {{ user.rating }}</span>
+                    <span class="user-card-position">#{{ pos }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

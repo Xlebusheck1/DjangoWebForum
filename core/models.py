@@ -15,6 +15,7 @@ class DefaultModel(models.Model):
 class User(AbstractUser):
     avatar = models.ImageField(upload_to='avatars', null=True, blank=True)
     rating = models.PositiveIntegerField(default=0, verbose_name="Рейтинг")
+    rank = models.PositiveIntegerField(default=0, verbose_name="Позиция в топе")
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'

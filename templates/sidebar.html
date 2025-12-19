@@ -12,17 +12,26 @@
 </div>
 
 <div class="sidebar-block">
-    <h3 class="sidebar-block-title">Лучшие пользователи</h3>
+    <h3 class="sidebar-block-title">
+        <a href="{% url 'users' %}" class="sidebar-block-title-link">Лучшие пользователи</a>
+    </h3>
     <div class="sidebar-users-list">
-        {% for user in top_users %}
-            <a href="#"
-               class="sidebar-user-profile">
+        {% for user, pos, diff in top_users %}
+            <a href="#" class="sidebar-user-profile">
                 {% if user.avatar %}
                     <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="sidebar-user-avatar">
                 {% else %}
                     <img src="{% static 'avatars/default-avatar.png' %}" alt="{{ user.username }}" class="sidebar-user-avatar">
                 {% endif %}
-                <span>{{ user.username }}</span>
+                <span class="sidebar-user-name">{{ user.username }}</span>
+                <span class="sidebar-user-rating">{{ user.rating }}</span>
+                {% if diff > 0 %}
+                    <span class="sidebar-user-trend sidebar-user-trend--up">+{{ diff }}</span>
+                {% elif diff < 0 %}
+                    <span class="sidebar-user-trend sidebar-user-trend--down">{{ diff }}</span>
+                {% else %}
+                    <span class="sidebar-user-trend sidebar-user-trend--same">•</span>
+                {% endif %}
             </a>
         {% empty %}
             <p>Пока нет данных.</p>
