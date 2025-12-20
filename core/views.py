@@ -292,6 +292,10 @@ class AskView(TemplateView):
         username = self.request.user.username if is_authenticated else ''    
         context['form'] = QuestionForm()        
         context['tags'] = Tag.objects.all()
+        context['popular_tags'] = get_popular_tags()
+        context['top_users'] = get_top_users()
+        context['is_authenticated'] = is_authenticated
+        context['username'] = username
         return context
     
     def post(self, request, *args, **kwargs):
@@ -569,9 +573,9 @@ class MyQuestionsView(TemplateView):
             "username": user.username,
             "current_sort": "my",
             "popular_tags": get_popular_tags(),
+            "top_users": get_top_users(), 
         })
-        return context
-    
+        return context    
 
 class UsersView(TemplateView):
     template_name = "core/users.html"

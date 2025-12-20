@@ -120,3 +120,53 @@
     color: #ffffff;
     background: rgba(255, 255, 255, 0.15);
 }
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0.75rem 1rem;
+    gap: 10px;
+  }
+
+  .header-search-form {
+    order: 3;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .header-user-menu {
+    order: 2;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .header-ask-btn {
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-logo {
+    text-align: center;
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .header-search-form {
+    margin: 0;
+  }
+
+  .header-user-menu {
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .header-user-name,
+  .header-user-link {
+    font-size: 0.85rem;
+  }
+}

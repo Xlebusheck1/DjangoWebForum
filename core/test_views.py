@@ -324,5 +324,5 @@ class MarkCorrectAnswerApiTests(BaseTestCase):
         self.assertTrue(self.answer.is_correct)
         self.assertEqual(self.user2.rating, 1)
 
-        
+        # после recalculate_user_ranks у user2 должен быть rank == 1
         self.assertEqual(self.user2.rank, 1)
