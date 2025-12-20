@@ -32,27 +32,12 @@ def search_order_api(request):
     if not q:
         return JsonResponse({"order": []})
 
-    user = request.user
-    
-    current_sort = request.GET.get("sort", "new")
-    tag_name = request.GET.get("tag") 
-
-    qs = Question.objects.all()
-
-    if tag_name:
-        qs = qs.filter(tags__name=tag_name)
-
-    if current_sort == "hot":
-        qs = qs.annotate(likes_count=Count("likes")).order_by("-likes_count", "-created_at")
-    else:
-        qs = qs.order_by("-created_at")
-   
-    qs = qs.filter(
+    qs = Question.objects.filter(
         Q(title__icontains=q) |
         Q(detailed__icontains=q)
-    )
-   
-    ids = list(qs.values_list("id", flat=True))
+    ).order_by("-created_at").values_list("id", flat=True)
+
+    ids = list(qs)
 
     return JsonResponse({"order": ids})
 
