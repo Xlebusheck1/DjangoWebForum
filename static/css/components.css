@@ -13,41 +13,41 @@
 }
 
 .btn:focus {
-    outline: 2px solid #d4704d;
+    outline: 2px solid var(--primary-color);
     outline-offset: 2px;
 }
 
 .btn--primary {
-    background: #d4704d;
-    color: #ffffff;
+    background: var(--primary-color);
+    color: var(--text-white);
 }
 
 .btn--primary:hover {
-    background: #b8563a;
+    background: var(--primary-dark);
 }
 
 .btn--primary:active {
-    background: #8b3f26;
+    background: var(--primary-darker);
 }
 
 .btn--secondary {
-    background: #f0ebe5;
-    color: #2c2c2c;
+    background: var(--primary-light);
+    color: var(--text-primary);
 }
 
 .btn--secondary:hover {
-    background: #d9d4cc;
+    background: var(--bg-tertiary);
 }
 
 .btn--outline {
     background: transparent;
-    border: 1px solid #e8e4dd;
-    color: #2c2c2c;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
 }
 
 .btn--outline:hover {
-    background: #f0ebe5;
-    border-color: #d4704d;
+    background: var(--primary-light);
+    border-color: var(--primary-color);
 }
 
 .btn--sm {
@@ -74,25 +74,25 @@
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: #2c2c2c;
+    color: var(--text-primary);
     font-size: 0.95rem;
 }
 
 .form-control {
     width: 100%;
     padding: 10px 12px;
-    border: 1px solid #e8e4dd;
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     font-size: 0.95rem;
-    color: #2c2c2c;
-    background-color: #ffffff;
+    color: var(--text-primary);
+    background-color: var(--bg-card);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
     font-family: inherit;
 }
 
 .form-control:focus {
-    border-color: #d4704d;
-    outline: 2px solid #d4704d;
+    border-color: var(--primary-color);
+    outline: 2px solid var(--primary-color);
     box-shadow: 0 0 0 3px rgba(212, 112, 77, 0.1);
 }
 
@@ -102,19 +102,19 @@ textarea.form-control {
 }
 
 .form-error {
-    color: #dc3545;
+    color: var(--accent-danger);
     font-size: 0.85rem;
     margin-top: 5px;
 }
 
 .form-error-input {
-    border-color: #dc3545;
+    border-color: var(--accent-danger);
 }
 
 .tag {
     display: inline-block;
-    background: #f0ebe5;
-    color: #2c2c2c;
+    background: var(--primary-light);
+    color: var(--text-primary);
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 0.85rem;
@@ -125,13 +125,13 @@ textarea.form-control {
 }
 
 .tag:hover {
-    background: #d4704d;
-    color: #ffffff;
+    background: var(--primary-color);
+    color: var(--text-white);
 }
 
 .tag.selected {
-    background: #d4704d;
-    color: #ffffff;
+    background: var(--primary-color);
+    color: var(--text-white);
 }
 
 .badge {
@@ -146,22 +146,22 @@ textarea.form-control {
 
 .badge--success {
     background: rgba(40, 167, 69, 0.15);
-    color: #28a745;
+    color: var(--accent-success);
 }
 
 .badge--danger {
     background: rgba(220, 53, 69, 0.15);
-    color: #dc3545;
+    color: var(--accent-danger);
 }
 
 .badge--warning {
     background: rgba(255, 193, 7, 0.15);
-    color: #ffc107;
+    color: var(--accent-warning);
 }
 
 .badge--info {
     background: rgba(17, 182, 224, 0.15);
-    color: #11b6e0;
+    color: var(--accent-info);
 }
 
 .like-btn {
@@ -173,16 +173,16 @@ textarea.form-control {
 
 .like-btn i {
     font-size: 20px;
-    color: #4d4d4d;              
+    color: var(--text-secondary);
     transition: color 0.2s;
 }
 
 .like-btn--active i {
-    color: #e0245e;           
+    color: var(--accent-danger);
 }
 
 .like-btn--inactive i:hover {
-    color: #e0245e;          
+    color: var(--accent-danger);
 }
 
 .answer-correct-badge {
@@ -192,7 +192,7 @@ textarea.form-control {
     padding: 4px 10px;
     border-radius: 16px;
     background: rgba(40, 167, 69, 0.12);
-    color: #28a745;
+    color: var(--accent-success);
     font-size: 0.8rem;
     font-weight: 600;
 }
@@ -216,7 +216,7 @@ textarea.form-control {
 
 .alert-success {
     background: rgba(40,167,69,0.08);
-    border: 1px solid #28a745;
+    border: 1px solid var(--accent-success);
     color: #1e7e34;
 }
 
@@ -231,20 +231,20 @@ textarea.form-control {
 }
 
 .sidebar-user-trend--up {
-    color: #16a34a;
+    color: var(--accent-success);
 }
 
 .sidebar-user-trend--down {
-    color: #dc2626; 
+    color: #dc2626;
 }
 
 .sidebar-user-trend--same {
-    color: #9ca3af; 
+    color: var(--text-light);
 }
 
 .user-card {
-    background: #ffffff;
-    border: 1px solid #e8e4dd;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 12px 16px;
     margin-bottom: 12px;
@@ -261,7 +261,7 @@ textarea.form-control {
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid #e8e4dd;
+    border: 1px solid var(--border-color);
 }
 
 .user-card-content {
@@ -279,12 +279,12 @@ textarea.form-control {
 
 .user-card-name {
     font-weight: 600;
-    color: #2c2c2c;
+    color: var(--text-primary);
 }
 
 .user-card-position {
     font-size: 0.85rem;
-    color: #5c5c5c;
+    color: var(--text-secondary);
 }
 
 .user-card-meta {
@@ -302,4 +302,33 @@ textarea.form-control {
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .btn.btn--lg {
+    width: 100%;
+  }
+
+  .messages {
+    padding: 0 10px;
+  }
+
+  .user-card {
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+  }
+
+  .user-card-main {
+    gap: 8px;
+  }
+
+  .user-card-name {
+    font-size: 0.9rem;
+  }
 }

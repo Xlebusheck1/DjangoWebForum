@@ -1,6 +1,6 @@
 .question-full {
-    background: #ffffff;
-    border: 1px solid #e8e4dd;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 30px;
     margin-bottom: 20px;
@@ -14,7 +14,7 @@
     height: 60px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid #e8e4dd;
+    border: 1px solid var(--border-color);
 }
 
 .question-full-content {
@@ -27,13 +27,13 @@
 .question-full-title {
     font-size: 1.4rem;
     font-weight: bold;
-    color: #d4704d;
+    color: var(--primary-color);
     text-decoration: none;
     line-height: 1.3;
 }
 
 .question-full-body {
-    color: #2c2c2c;
+    color: var(--text-primary);
     line-height: 1.6;
     font-size: 1rem;
 }
@@ -53,17 +53,17 @@
 }
 
 .answers-section-title {
-    color: #2c2c2c;
+    color: var(--text-primary);
     font-size: 1.3rem;
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 1px solid #e8e4dd;
+    border-bottom: 1px solid var(--border-color);
     font-weight: 600;
 }
 
 .answer {
-    background: #ffffff;
-    border: 1px solid #e8e4dd;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 15px;
@@ -80,7 +80,7 @@
     height: 50px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid #e8e4dd;
+    border: 1px solid var(--border-color);
 }
 
 .answer-main {
@@ -91,7 +91,7 @@
 }
 
 .answer-text {
-    color: #2c2c2c;
+    color: var(--text-primary);
     line-height: 1.6;
     font-size: 0.95rem;
 }
@@ -105,7 +105,7 @@
     align-items: center;
     gap: 8px;
     padding-top: 10px;
-    border-top: 1px solid #f0ebe5;
+    border-top: 1px solid var(--border-light);
     margin-top: 10px;
 }
 
@@ -113,25 +113,25 @@
     width: 20px;
     height: 20px;
     cursor: pointer;
-    accent-color: #d4704d;
+    accent-color: var(--primary-color);
 }
 
 .answer-checkbox-label {
-    color: #2c2c2c;
+    color: var(--text-primary);
     font-size: 0.85rem;
     cursor: pointer;
     font-weight: 500;
 }
 
 .your-answer {
-    background: #ffffff;
-    border: 1px solid #e8e4dd;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 25px;
 }
 
 .your-answer-title {
-    color: #2c2c2c;
+    color: var(--text-primary);
     font-size: 1.3rem;
     margin-bottom: 20px;
     font-weight: 600;
@@ -150,7 +150,7 @@
 }
 
 .question-likes {
-    color: #dc3545;
+    color: var(--accent-danger);
     font-weight: bold;
     font-size: 0.9rem;
     display: flex;
@@ -166,7 +166,7 @@
     gap: 15px;
     margin-top: 10px;
     padding-top: 15px;
-    border-top: 1px solid #f0ebe5;
+    border-top: 1px solid var(--border-light);
 }
 
 .question-full-stats {
@@ -176,7 +176,7 @@
 }
 
 .question-full-likes {
-    color: #dc3545;
+    color: var(--accent-danger);
     font-weight: bold;
     font-size: 1rem;
     display: flex;
@@ -192,11 +192,11 @@
     gap: 15px;
     margin-top: 15px;
     padding-top: 15px;
-    border-top: 1px solid #f0ebe5;
+    border-top: 1px solid var(--border-light);
 }
 
 .answer-likes {
-    color: #dc3545;
+    color: var(--accent-danger);
     font-weight: bold;
     font-size: 0.9rem;
     display: flex;
@@ -207,9 +207,9 @@
 .answer-mark-correct-btn {
     padding: 6px 12px;
     border-radius: 16px;
-    border: 1px solid #e8e4dd;
-    background-color: #ffffff;
-    color: #2c2c2c;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+    color: var(--text-primary);
     font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
@@ -220,19 +220,19 @@
 }
 
 .answer-mark-correct-btn:hover {
-    border-color: #28a745;
+    border-color: var(--accent-success);
     background-color: rgba(40, 167, 69, 0.04);
 }
 
 .answer-mark-correct-btn--active {
-    border-color: #28a745;
+    border-color: var(--accent-success);
     background-color: rgba(40, 167, 69, 0.08);
-    color: #28a745;
+    color: var(--accent-success);
 }
 
 .answers-sort-tabs {
     display: flex;
-    border-bottom: 1px solid #f0ebe5;
+    border-bottom: 1px solid var(--border-light);
     margin-bottom: 15px;
 }
 
@@ -242,65 +242,65 @@
     padding: 10px 0;
     font-weight: 600;
     font-size: 0.95rem;
-    color: #7a7a7a;
+    color: var(--text-light);
     text-decoration: none;
     cursor: pointer;
-    background: #f8f6f1;
+    background: var(--primary-light);
     border-bottom: 3px solid transparent;
     transition: all 0.2s ease;
 }
 
 .answers-sort-tab:hover {
-    color: #d4704d;
+    color: var(--primary-color);
 }
 
 .answers-sort-tab--active {
-    color: #ffffff;
-    background: #d4704d;
-    border-bottom-color: #b8563a;
+    color: var(--text-white);
+    background: var(--primary-color);
+    border-bottom-color: var(--primary-dark);
 }
 
 @media (max-width: 768px) {
-  .question-full {
-    flex-direction: column;
-    gap: 12px;
-  }
+    .question-full {
+        flex-direction: column;
+        gap: 12px;
+    }
 
-  .question-full-content {
-    gap: 10px;
-  }
+    .question-full-content {
+        gap: 10px;
+    }
 
-  .answer-content {
-    flex-direction: row;
-    gap: 10px;
-  }
+    .answer-content {
+        flex-direction: row;
+        gap: 10px;
+    }
 
-  .question-full-meta,
-  .answer-meta {
-    gap: 10px;
-  }
+    .question-full-meta,
+    .answer-meta {
+        gap: 10px;
+    }
 }
 
 @media (max-width: 480px) {
-  .question-full-meta,
-  .answer-meta {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+    .question-full-meta,
+    .answer-meta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-  .question-stats,
-  .question-full-stats {
-    width: 100%;
-    justify-content: flex-start;
-  }
+    .question-stats,
+    .question-full-stats {
+        width: 100%;
+        justify-content: flex-start;
+    }
 
-  .answer-content {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+    .answer-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-  .answer-avatar img {
-    width: 40px;
-    height: 40px;
-  }
+    .answer-avatar img {
+        width: 40px;
+        height: 40px;
+    }
 }

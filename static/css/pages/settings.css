@@ -1,8 +1,13 @@
+.settings-page {
+    background: var(--bg-color);
+    min-height: 100vh;
+}
+
 .settings {
-    background: #ffffff;
+    background: var(--bg-card);
     border-radius: 15px;
     padding: 40px;
-    box-shadow: 0 4px 20px rgba(212, 112, 77, 0.1);
+    box-shadow: 0 4px 20px var(--shadow-color);
     animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -18,7 +23,7 @@
 .settings-title {
     font-size: 2rem;
     font-weight: 700;
-    color: #2c2c2c;
+    color: var(--text-primary);
     margin-bottom: 30px;
     text-align: center;
 }
@@ -29,15 +34,14 @@
     gap: 25px;
 }
 
-/* Avatar Section */
 .settings-avatar-section {
     display: flex;
     align-items: flex-start;
     gap: 25px;
     padding: 25px;
-    background: linear-gradient(135deg, #f8f6f1 0%, #f0ebe5 100%);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--primary-light) 100%);
     border-radius: 12px;
-    border: 2px solid #e8e4dd;
+    border: 2px solid var(--border-color);
 }
 
 .settings-avatar-preview {
@@ -49,7 +53,7 @@
     height: 120px;
     border-radius: 12px;
     object-fit: cover;
-    border: 3px solid #ffffff;
+    border: 3px solid var(--bg-card);
     box-shadow: 0 6px 20px rgba(212, 112, 77, 0.15);
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -68,32 +72,31 @@
 
 .settings-avatar-upload .form-label {
     font-weight: 700;
-    color: #2c2c2c;
+    color: var(--text-primary);
     font-size: 0.95rem;
 }
 
 .settings-avatar-upload input[type="file"] {
     padding: 10px 12px;
-    border: 2px dashed #d4704d;
+    border: 2px dashed var(--primary-color);
     border-radius: 8px;
-    background: #ffffff;
-    color: #2c2c2c;
+    background: var(--bg-card);
+    color: var(--text-primary);
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .settings-avatar-upload input[type="file"]:hover {
-    background: #f8f6f1;
-    border-color: #b8563a;
+    background: var(--bg-secondary);
+    border-color: var(--primary-dark);
 }
 
 .settings-avatar-upload input[type="file"]:focus {
     outline: none;
-    border-color: #d4704d;
+    border-color: var(--primary-color);
     box-shadow: 0 4px 12px rgba(212, 112, 77, 0.2);
 }
 
-/* Form Groups */
 .settings-group {
     display: flex;
     flex-direction: column;
@@ -102,7 +105,7 @@
 
 .settings-label {
     font-weight: 700;
-    color: #2c2c2c;
+    color: var(--text-primary);
     font-size: 0.95rem;
 }
 
@@ -110,11 +113,11 @@
 .settings-group input[type="email"],
 .settings-group input[type="password"] {
     padding: 12px 15px;
-    border: 2px solid #e8e4dd;
+    border: 2px solid var(--border-color);
     border-radius: 10px;
     font-size: 0.95rem;
-    color: #2c2c2c;
-    background: #ffffff;
+    color: var(--text-primary);
+    background: var(--bg-card);
     font-family: inherit;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -122,19 +125,18 @@
 .settings-group input[type="text"]:focus,
 .settings-group input[type="email"]:focus,
 .settings-group input[type="password"]:focus {
-    border-color: #d4704d;
+    border-color: var(--primary-color);
     outline: none;
     box-shadow: 0 4px 15px rgba(212, 112, 77, 0.2);
     transform: translateY(-2px);
 }
 
-/* Error Messages */
 .form-error {
     padding: 10px 12px;
     background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(200, 40, 50, 0.05) 100%);
-    border: 1px solid #dc3545;
+    border: 1px solid var(--accent-danger);
     border-radius: 8px;
-    color: #dc3545;
+    color: var(--accent-danger);
     font-size: 0.85rem;
     font-weight: 600;
 }
@@ -143,7 +145,6 @@
     margin: 0;
 }
 
-/* Actions Section */
 .settings-actions {
     display: flex;
     gap: 12px;
@@ -153,8 +154,8 @@
 
 .settings-btn-save {
     padding: 14px 32px;
-    background: linear-gradient(135deg, #d4704d 0%, #b8563a 100%);
-    color: #ffffff;
+    background: var(--primary-gradient);
+    color: var(--text-white);
     border: none;
     border-radius: 10px;
     font-size: 0.95rem;

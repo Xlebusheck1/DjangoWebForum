@@ -1,6 +1,6 @@
 .sidebar-block {
-    background: #ffffff;
-    border: 1px solid #e8e4dd;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
@@ -8,13 +8,13 @@
 
 .sidebar-block-title {
     margin-bottom: 15px;
-    color: #2c2c2c;
+    color: var(--text-primary);
     font-size: 1.1rem;
     font-weight: bold;
 }
 
 .sidebar-block-title-link {
-    color: #2c2c2c;
+    color: var(--text-primary);
     text-decoration: none;
 }
 
@@ -29,8 +29,8 @@
 }
 
 .sidebar-tag {
-    background: #f0ebe5;
-    color: #2c2c2c;
+    background: var(--primary-light);
+    color: var(--text-primary);
     padding: 5px 10px;
     border-radius: 15px;
     font-size: 0.85rem;
@@ -41,12 +41,12 @@
 }
 
 .sidebar-tag:hover {
-    background: #d4704d;
-    color: #ffffff;
+    background: var(--primary-color);
+    color: var(--text-white);
 }
 
 .sidebar-notags {
-    color: #5c5c5c;
+    color: var(--text-secondary);
     font-size: 0.9rem;
 }
 
@@ -61,7 +61,7 @@
     align-items: center;
     gap: 10px;
     text-decoration: none;
-    color: #2c2c2c;
+    color: var(--text-primary);
     padding: 8px;
     border-radius: 4px;
     transition: background-color 0.2s;
@@ -69,7 +69,7 @@
 }
 
 .sidebar-user-profile:hover {
-    background: #f0ebe5;
+    background: var(--primary-light);
 }
 
 .sidebar-user-avatar {
@@ -77,5 +77,5 @@
     height: 30px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid #e8e4dd;
+    border: 1px solid var(--border-color);
 }

@@ -12,6 +12,10 @@
             autocomplete="off">        
     </form>
     
+    <button class="theme-toggle-btn" id="theme-toggle" title="Переключить тему" aria-label="Переключить тему">
+        🌙
+    </button>
+
     {% if user.is_authenticated %}            
         <button class="header-ask-btn" onclick="location.href='{% url 'ask' %}'">ASK</button>
         <div class="header-user-menu">
