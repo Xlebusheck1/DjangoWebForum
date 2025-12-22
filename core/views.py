@@ -15,6 +15,8 @@ from django.db.models import Count, Exists, OuterRef, Q
 from .models import Answer, AnswerLike, QuestionLike
 User = get_user_model()
 
+
+# Пересчитывает ранги всех пользователей по их рейтингу.
 def recalculate_user_ranks():
     users = User.objects.order_by("-rating", "id")
     current_rank = 1
@@ -27,6 +29,8 @@ def recalculate_user_ranks():
     if to_update:
         User.objects.bulk_update(to_update, ["rank"])
 
+
+# Возвращает через API упорядоченный список ID вопросов, подходящих под строку поиска.
 def search_order_api(request):
     q = request.GET.get("q", "").strip()
     if not q:
@@ -41,6 +45,8 @@ def search_order_api(request):
 
     return JsonResponse({"order": ids})
 
+
+# Универсальная функция пагинации для списков объектов.
 def paginate(objects_list, request, per_page=10):
     paginator = Paginator(objects_list, per_page)
     page = request.GET.get('page', 1)
@@ -54,11 +60,15 @@ def paginate(objects_list, request, per_page=10):
     
     return objects_page
 
+
+# Возвращает самые популярные теги по количеству связанных вопросов.
 def get_popular_tags():    
     return Tag.objects.annotate(
         questions_count=Count('question')
     ).order_by('-questions_count')[:10]
 
+
+# Возвращает список топ‑пользователей с их текущим рангом и изменением позиции.
 def get_top_users(limit=5):
     users = list(User.objects.order_by("-rating", "id"))
     top = users[:limit]
@@ -72,6 +82,7 @@ def get_top_users(limit=5):
     return result
 
 
+# Главная страница с лентой новых вопросов.
 @method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class IndexView(TemplateView):
@@ -110,6 +121,7 @@ class IndexView(TemplateView):
         return context
 
 
+# Страница с «горячими» вопросами, отсортированными по лайкам.
 class HotView(TemplateView):
     template_name = 'core/index.html'
     
@@ -146,6 +158,7 @@ class HotView(TemplateView):
         return context
 
 
+# Страница списка вопросов по конкретному тегу.
 class TagView(TemplateView):
     template_name = 'core/tag.html'
     
@@ -183,6 +196,7 @@ class TagView(TemplateView):
         return context
 
 
+# Страница отдельного вопроса с ответами и формой добавления ответа.
 class QuestionView(TemplateView):
     template_name = "core/question.html"
 
@@ -239,6 +253,7 @@ class QuestionView(TemplateView):
 
         return context
 
+    # Обрабатывает отправку формы с новым ответом на вопрос.
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect("login")
@@ -260,6 +275,7 @@ class QuestionView(TemplateView):
         return self.render_to_response(context)
     
 
+# Страница создания нового вопроса (форма Ask).
 @method_decorator(login_required, name='dispatch')
 class AskView(TemplateView):
     http_method_names = ['get', 'post']
@@ -283,6 +299,7 @@ class AskView(TemplateView):
         context['username'] = username
         return context
     
+    # Обрабатывает отправку формы создания нового вопроса.
     def post(self, request, *args, **kwargs):
         form = QuestionForm(request.POST)
         if form.is_valid():           
@@ -303,6 +320,7 @@ class AskView(TemplateView):
         return render(request, self.template_name, {'form': form, 'tags': Tag.objects.all()})
 
 
+# Страница смены пароля пользователя.
 @method_decorator(login_required, name='dispatch')
 class PasswordChangeView(TemplateView):
     template_name = 'core/change_password.html'
@@ -311,6 +329,7 @@ class PasswordChangeView(TemplateView):
         form = PasswordChangeForm()
         return render(request, self.template_name, {'form': form})
 
+    # Обрабатывает POST‑запрос на смену пароля.
     def post(self, request, *args, **kwargs):
         form = PasswordChangeForm(request.POST)
         if form.is_valid():
@@ -321,6 +340,7 @@ class PasswordChangeView(TemplateView):
         return render(request, self.template_name, {'form': form})
 
 
+# Страница настроек профиля пользователя.
 @method_decorator(login_required, name='dispatch')
 class SettingsView(TemplateView):
     template_name = 'core/settings.html'
@@ -331,6 +351,7 @@ class SettingsView(TemplateView):
             return redirect('login')
         return super().dispatch(request, *args, **kwargs)
     
+    # Обрабатывает сохранение настроек профиля.
     def post(self, request, *args, **kwargs):
         form = SettingsForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
@@ -352,6 +373,7 @@ class SettingsView(TemplateView):
         return context
 
 
+# Страница авторизации (логин пользователя).
 class AuthView(TemplateView):
     http_method_names = ['get', 'post']
     template_name = 'core/auth.html'
@@ -362,6 +384,7 @@ class AuthView(TemplateView):
         context['form'] = form
         return context
     
+    # Обрабатывает отправку формы логина.
     def post(self, request, *args, **kwargs):
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -372,13 +395,15 @@ class AuthView(TemplateView):
         return render(request, template_name='core/auth.html', context={'form': form})
 
 
+# Обрабатывает разлогинивание пользователя и редирект на главную.
 @login_required()
 def logout_view(request):
     if request.method == 'POST':
         logout(request)
         return redirect('/')
+    
 
-
+# Страница регистрации нового пользователя.
 class SignupView(TemplateView):
     http_method_names = ['get', 'post']
     template_name = 'core/signup.html'
@@ -389,6 +414,7 @@ class SignupView(TemplateView):
         context['form'] = form
         return context
     
+    # Обрабатывает отправку формы регистрации.
     def post(self, request, *args, **kwargs):
         form = SignupForm(request.POST)
         if form.is_valid():
@@ -400,19 +426,7 @@ class SignupView(TemplateView):
         return render(request, template_name='core/signup.html', context={'form': form})
 
 
-def like_question(request, question_id):
-    if request.method == 'POST' and request.session.get('is_authenticated'):
-        ...
-        return redirect('question', question_id=question_id)
-    return redirect('login')
-
-def like_answer(request, answer_id):
-    if request.method == 'POST' and request.session.get('is_authenticated'):
-        ...
-        return redirect('question', question_id=request.POST.get('question_id'))
-    return redirect('login')
-
-
+# API‑эндпоинт для лайка/анлайка вопроса.
 @method_decorator(login_required, name='dispatch')
 class QuestionLikeAPIView(View):
     http_method_names = ['post']
@@ -454,7 +468,7 @@ class QuestionLikeAPIView(View):
         }, status=200)
 
 
-
+# API‑эндпоинт для лайка/анлайка ответа.
 @method_decorator(login_required, name="dispatch")
 class AnswerLikeAPIView(View):
     http_method_names = ["post"]
@@ -487,6 +501,7 @@ class AnswerLikeAPIView(View):
         return JsonResponse({"success": True, "rating": answer.rating}, status=200)
     
 
+# API‑эндпоинт для пометки ответа как правильного.
 @method_decorator(login_required, name="dispatch")
 class MarkCorrectAnswerAPIView(View):
     http_method_names = ["post"]
@@ -527,6 +542,7 @@ class MarkCorrectAnswerAPIView(View):
         return JsonResponse({"success": True}, status=200)
     
 
+# Страница со списком вопросов текущего пользователя.
 @method_decorator(login_required, name="dispatch")
 class MyQuestionsView(TemplateView):
     template_name = "core/my_questions.html"
@@ -562,6 +578,8 @@ class MyQuestionsView(TemplateView):
         })
         return context    
 
+
+# Страница со списком всех пользователей и их рейтингами.
 class UsersView(TemplateView):
     template_name = "core/users.html"
 
