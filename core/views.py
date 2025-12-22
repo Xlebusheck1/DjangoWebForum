@@ -1,4 +1,5 @@
-from django.http import JsonResponse
+import json
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.generic import TemplateView
@@ -13,6 +14,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.views import View
 from django.db.models import Count, Exists, OuterRef, Q
 from .models import Answer, AnswerLike, QuestionLike
+from .burst import BurstMixin
 User = get_user_model()
 
 
@@ -277,9 +279,11 @@ class QuestionView(TemplateView):
 
 # Страница создания нового вопроса (форма Ask).
 @method_decorator(login_required, name='dispatch')
-class AskView(TemplateView):
+class AskView(BurstMixin, TemplateView):
     http_method_names = ['get', 'post']
     template_name = 'core/ask.html'
+    burst_key = 'ask'
+    limits = {'minute': 10}
     
     def dispatch(self, request, *args, **kwargs):
         is_authenticated = request.user.is_authenticated
@@ -299,6 +303,10 @@ class AskView(TemplateView):
         context['username'] = username
         return context
     
+    def get_burst_error_response(self, request):
+        messages.add_message(request, message=self.burst_error_msg, level=messages.ERROR)
+        return redirect('/')
+
     # Обрабатывает отправку формы создания нового вопроса.
     def post(self, request, *args, **kwargs):
         form = QuestionForm(request.POST)

@@ -22,10 +22,9 @@ def get_client_ip(request):
 
 
 class BurstMixin:
-    burst_key = '' # Определить в методе использования
-    limits = {} # Лимиты использования метода
-    burst_codes = [201, 202]
-
+    burst_key = ''
+    limits = {} 
+    burst_codes = [200, 201, 202, 302]    
     limits_to_secs = {'minute': 60, 'hour': 3600, 'day': 3600 * 24}
     burst_error_code = 200
     burst_error_msg = 'Превышено количество отправок'
