@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+from configparser import ConfigParser
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -109,4 +110,16 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+config = ConfigParser()
+config.read(os.path.join(BASE_DIR, 'conf', 'local.conf'))
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": config.get('redis', 'LOCATION', fallback='redis://localhost:6379/1'),
+        'TIMEOUT': config.getint('redis', 'LIFETIME', fallback=9660),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "KEY_PREFIX": config.get('redis', 'PREFIX', fallback='seminar') 
+    }
+}
