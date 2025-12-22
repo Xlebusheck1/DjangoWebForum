@@ -15,6 +15,7 @@ from django.views import View
 from django.db.models import Count, Exists, OuterRef, Q
 from .models import Answer, AnswerLike, QuestionLike
 from .burst import BurstMixin
+from django.views.decorators.cache import cache_page
 User = get_user_model()
 
 
@@ -199,6 +200,7 @@ class TagView(TemplateView):
 
 
 # Страница отдельного вопроса с ответами и формой добавления ответа.
+@method_decorator(cache_page(60 * 2), name="get") 
 class QuestionView(TemplateView):
     template_name = "core/question.html"
 
@@ -277,56 +279,53 @@ class QuestionView(TemplateView):
         return self.render_to_response(context)
     
 
-# Страница создания нового вопроса (форма Ask).
+ASK_FORM_SESSION_KEY = "ask_form_data"
+
 @method_decorator(login_required, name='dispatch')
 class AskView(BurstMixin, TemplateView):
     http_method_names = ['get', 'post']
     template_name = 'core/ask.html'
     burst_key = 'ask'
     limits = {'minute': 10}
-    
+
     def dispatch(self, request, *args, **kwargs):
-        is_authenticated = request.user.is_authenticated
         if not request.user.is_authenticated:
             return redirect('login')
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         is_authenticated = self.request.user.is_authenticated
-        username = self.request.user.username if is_authenticated else ''    
-        context['form'] = QuestionForm()        
-        context['tags'] = Tag.objects.all()
-        context['popular_tags'] = get_popular_tags()
-        context['top_users'] = get_top_users()
-        context['is_authenticated'] = is_authenticated
-        context['username'] = username
+        username = self.request.user.username if is_authenticated else ''
+        data = self.request.session.get(ASK_FORM_SESSION_KEY)
+        form = QuestionForm(initial=data) if data else QuestionForm()
+        context.update({
+            'form': form,
+            'tags': Tag.objects.all(),
+            'popular_tags': get_popular_tags(),
+            'top_users': get_top_users(),
+            'is_authenticated': is_authenticated,
+            'username': username,
+        })
         return context
-    
-    def get_burst_error_response(self, request):
-        messages.add_message(request, message=self.burst_error_msg, level=messages.ERROR)
-        return redirect('/')
 
-    # Обрабатывает отправку формы создания нового вопроса.
     def post(self, request, *args, **kwargs):
         form = QuestionForm(request.POST)
-        if form.is_valid():           
+        request.session[ASK_FORM_SESSION_KEY] = request.POST.dict()
+        if form.is_valid():
             title = form.cleaned_data['title']
             detailed = form.cleaned_data['detailed']
-          
             question = Question.objects.create(
                 title=title,
                 detailed=detailed,
                 author=request.user
             )
-           
             tag_ids = request.POST.get('tags', '')
             tag_ids = [int(t) for t in tag_ids.split(',') if t.isdigit()]
-            question.tags.set(tag_ids)  
+            question.tags.set(tag_ids)
+            request.session.pop(ASK_FORM_SESSION_KEY, None)
             return redirect('index')
-        
         return render(request, self.template_name, {'form': form, 'tags': Tag.objects.all()})
-
 
 # Страница смены пароля пользователя.
 @method_decorator(login_required, name='dispatch')
@@ -382,6 +381,7 @@ class SettingsView(TemplateView):
 
 
 # Страница авторизации (логин пользователя).
+@method_decorator(cache_page(60 * 5), name="get")
 class AuthView(TemplateView):
     http_method_names = ['get', 'post']
     template_name = 'core/auth.html'
@@ -412,6 +412,7 @@ def logout_view(request):
     
 
 # Страница регистрации нового пользователя.
+@method_decorator(cache_page(60 * 5), name="get")
 class SignupView(TemplateView):
     http_method_names = ['get', 'post']
     template_name = 'core/signup.html'
