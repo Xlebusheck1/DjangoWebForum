@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from .api_views import QuestionLikeAPI, AnswerLikeAPI
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
