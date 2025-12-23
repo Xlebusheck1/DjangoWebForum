@@ -1,0 +1,81 @@
+.sidebar-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.sidebar-block-title {
+    margin-bottom: 15px;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.sidebar-block-title-link {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.sidebar-block-title-link:hover {
+    text-decoration: underline;
+}
+
+.sidebar-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.sidebar-tag {
+    background: var(--primary-light);
+    color: var(--text-primary);
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.sidebar-tag:hover {
+    background: var(--primary-color);
+    color: var(--text-white);
+}
+
+.sidebar-notags {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.sidebar-users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sidebar-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    font-weight: 500;
+}
+
+.sidebar-user-profile:hover {
+    background: var(--primary-light);
+}
+
+.sidebar-user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}

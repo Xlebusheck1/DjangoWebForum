@@ -13,6 +13,7 @@ ALLOWED_HOSTS = [
     '172.16.244.87',
     'localhost',
     '127.0.0.1',
+    'devguru.local'
 ]
 
 INSTALLED_APPS = [
@@ -104,6 +105,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
