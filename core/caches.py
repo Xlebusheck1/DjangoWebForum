@@ -12,7 +12,7 @@ class TagCache:
         if not items:
             items = [{
                 'id': tag.id,
-                'title': tag.title,
+                'name': tag.name,
             } for tag in Tag.objects.all()]
             cache.set(cls.key, items)
             return items
