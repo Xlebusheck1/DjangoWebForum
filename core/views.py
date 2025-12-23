@@ -235,7 +235,6 @@ class TagView(TemplateView):
 
 
 # Страница отдельного вопроса с ответами и формой добавления ответа.
-@method_decorator(cache_page(60 * 2), name="get") 
 class QuestionView(TemplateView):
     template_name = "core/question.html"
 
