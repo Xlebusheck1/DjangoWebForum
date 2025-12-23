@@ -16,6 +16,8 @@ from django.db.models import Count, Exists, OuterRef, Q
 from .models import Answer, AnswerLike, QuestionLike
 from .burst import BurstMixin
 from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+from core.caches import TagCache
 User = get_user_model()
 
 
@@ -65,14 +67,26 @@ def paginate(objects_list, request, per_page=10):
 
 
 # Возвращает самые популярные теги по количеству связанных вопросов.
-def get_popular_tags():    
-    return Tag.objects.annotate(
-        questions_count=Count('question')
-    ).order_by('-questions_count')[:10]
-
+def get_popular_tags():
+    tags_data = TagCache.get_items()
+    ids = [t["id"] for t in tags_data]
+    qs = (Tag.objects
+          .filter(id__in=ids)
+          .annotate(questions_count=Count("question"))
+          .order_by("-questions_count"))[:10]
+    return qs
 
 # Возвращает список топ‑пользователей с их текущим рангом и изменением позиции.
+
+
+TOP_USERS_CACHE_KEY = "top_users"
+TOP_USERS_TIMEOUT = 60 
 def get_top_users(limit=5):
+    cache_key = f"{TOP_USERS_CACHE_KEY}:{limit}"
+    data = cache.get(cache_key)
+    if data is not None:
+        return data
+
     users = list(User.objects.order_by("-rating", "id"))
     top = users[:limit]
 
@@ -80,10 +94,11 @@ def get_top_users(limit=5):
     for index, user in enumerate(top, start=1):
         current_rank = index
         old_rank = user.rank or current_rank
-        diff = old_rank - current_rank 
+        diff = old_rank - current_rank
         result.append((user, current_rank, diff))
-    return result
 
+    cache.set(cache_key, result, TOP_USERS_TIMEOUT)
+    return result
 
 # Главная страница с лентой новых вопросов.
 @method_decorator(never_cache, name='dispatch')
