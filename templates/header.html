@@ -1,0 +1,48 @@
+{% load static %}
+<header class="header">
+    <h1 class="header-logo" onclick="location.href='{% url 'index' %}'">DevGuru</h1>
+
+    <form action="" method="get" class="header-search-form" onsubmit="return false;">
+        <input
+            type="text"
+            id="header-search-input"
+            name="q"
+            class="header-search-input"
+            placeholder="Поиск по сайту..."
+            autocomplete="off">        
+    </form>
+    
+    <button class="theme-toggle-btn" id="theme-toggle" title="Переключить тему" aria-label="Переключить тему">
+        🌙
+    </button>
+
+    {% if user.is_authenticated %}            
+        <button class="header-ask-btn" onclick="location.href='{% url 'ask' %}'">ASK</button>
+        <div class="header-user-menu">
+                        
+            {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" alt="avatar" class="header-user-avatar">
+            {% else %}
+                <img src="{% static '/avatars/default-avatar.png' %}" alt="avatar">
+            {% endif %}
+            
+            <span class="header-user-name">{{ user.username }}</span>
+
+            <a href="{% url 'my_questions' %}" class="header-user-link">my questions</a>
+
+            <a href="{% url 'settings' %}" class="header-user-link">settings</a>
+
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button class='btn' type='submit'>log out</button>
+            </form>
+
+        </div>
+    {% else %}
+        <button class="header-ask-btn" onclick="location.href='{% url 'signup' %}'">ASK</button>
+        <div class="header-user-menu">            
+            <a href="{% url 'login' %}" class="header-user-link">log in</a>
+            <a href="{% url 'signup' %}" class="header-user-link">register</a>
+        </div>
+    {% endif %}
+</header>

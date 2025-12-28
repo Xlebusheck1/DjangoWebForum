@@ -1,17 +1,17 @@
 <div class="pagination">
     {% if page.has_previous %}
-        <a href="?page={{ page.previous_page_number }}" class="pagination__btn">back</a>
+        <a href="?page={{ page.previous_page_number }}" class="pagination-btn">back</a>
     {% endif %}
     
     {% for num in page.paginator.page_range %}
         {% if page.number == num %}
-            <span class="pagination__btn pagination__btn--current">{{ num }}</span>
+            <span class="pagination-btn pagination-btn--current">{{ num }}</span>
         {% else %}
-            <a href="?page={{ num }}" class="pagination__btn">{{ num }}</a>
+            <a href="?page={{ num }}" class="pagination-btn">{{ num }}</a>
         {% endif %}
     {% endfor %}
     
     {% if page.has_next %}
-        <a href="?page={{ page.next_page_number }}" class="pagination__btn">next</a>
+        <a href="?page={{ page.next_page_number }}" class="pagination-btn">next</a>
     {% endif %}
 </div>

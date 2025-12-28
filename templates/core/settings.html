@@ -10,35 +10,68 @@
 {% block content %}
 <div class="left-column">
     <div class="settings">
-        <h2 class="settings__title">Settings: user</h2>
-        <form class="settings__form">
-            <div class="form-group">
-                <label for="settings-login" class="form-label">Login</label>
-                <input type="text" id="settings-login" class="form-input" value="current_user" placeholder="Введите ваш логин">
+        <h2 class="settings-title">Настройки: {{ username }}</h2>
+        <form method="POST" action="{% url 'settings' %}" class="settings-form" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-error">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
             </div>
-            <div class="form-group">
-                <label for="settings-email" class="form-label">Email</label>
-                <input type="email" id="settings-email" class="form-input" value="user@example.com" placeholder="Введите ваш email">
-            </div>
-            <div class="form-group">
-                <label for="settings-nick" class="form-label">Nick</label>
-                <input type="text" id="settings-nick" class="form-input" value="CoolDeveloper" placeholder="Введите ваш ник">
-            </div>
-            <div class="form-group">
-                <label for="settings-avatar" class="form-label">Avatar</label>
-                <div class="settings__avatar-preview">
-                    <div class="settings__avatar-image">
-                        <img src="#" class="settings__current-avatar">
-                    </div>
-                    <input type="file" id="settings-avatar" class="form-file" accept="image/*">
+            {% endif %}
+
+            <div class="settings-avatar-section">
+                <div class="settings-avatar-preview">
+                    {% if request.user.avatar %}
+                        <img src="{{ request.user.avatar.url }}" alt="Текущий аватар" class="settings-current-avatar">
+                    {% else %}
+                        <img src="{% static '/avatars/default-avatar.png' %}" alt="Нет аватара" class="settings-current-avatar">
+                    {% endif %}
                 </div>
-            </div>
-            <button type="submit" class="btn">Save</button>
+                <div class="settings-avatar-upload">
+                    <label for="{{ form.avatar.id_for_label }}" class="settings-label">Загрузить аватар</label>
+                    {{ form.avatar }}
+                    {% if form.avatar.errors %}
+                    <div class="form-error">
+                        {% for error in form.avatar.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>    
+
+            <p class="settings-group">
+                <label for={{ form.username.id_for_label }} class="settings-label">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                <div style="color: red; font-size: 0.875rem;">
+                    {% for error in form.username.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </p>
+
+            <p class="settings-group">
+                <label for={{ form.email.id_for_label }} class="settings-label">Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                <div style="color: red; font-size: 0.875rem;">
+                    {% for error in form.email.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </p>
+
+            <a href="{% url 'change_password' %}" class="btn btn--secondary">Сменить Пароль</a>             
+
+            <button type="submit" class="btn btn--primary">Сохранить</button>
         </form>
     </div>
 </div>
 
-<div class="right-column">
-    {% include 'sidebar.html' %}
-</div>
 {% endblock %}

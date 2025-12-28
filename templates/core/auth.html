@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/auth.css' %}">
+{% endblock %}
+{% block title %}DevGuru - Вход{% endblock %}
+
+{% block content %}
+<div class="left-column">
+<div class="auth-container">
+  <div class="auth-card">
+    <h1 class="auth-title">Вход</h1>
+    <p class="auth-subtitle">Добро пожаловать! Введите свои данные для входа.</p>
+
+    <form class="auth-form" method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="auth-error">
+          {% for error in form.non_field_errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="auth-group">
+        <label for="{{ form.username.id_for_label }}" class="auth-label">Имя пользователя</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+          <div class="form-error">
+            {% for error in form.username.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="auth-group">
+        <label for="{{ form.password.id_for_label }}" class="auth-label">Пароль</label>
+        {{ form.password }}
+        {% if form.password.errors %}
+          <div class="form-error">
+            {% for error in form.password.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="auth-submit">Войти</button>
+
+      <p class="auth-link">
+        Нет аккаунта?
+        <a href="{% url 'signup' %}">Зарегистрироваться</a>
+      </p>
+    </form>
+  </div>
+</div>
+</div>
+{% endblock %}

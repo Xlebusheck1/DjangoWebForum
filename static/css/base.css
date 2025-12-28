@@ -7,8 +7,9 @@
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
-    color: #333;
-    background-color: #f4f4f4;
+    color: var(--text-primary);
+    background-color: var(--bg-color);
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .main-container {
@@ -18,14 +19,42 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    background: var(--bg-color);
 }
 
 .left-column {
     padding: 20px;
-    border-right: 1px solid #e0e0e0;
+    border-right: 1px solid var(--border-color);
     min-height: 600px;
+    background: var(--bg-color);
 }
 
 .right-column {
     padding: 20px;
+    background: var(--bg-color);
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+  .left-column,
+  .right-column {
+    padding: 10px;
+    min-height: auto;
+    border-right: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-container {
+    padding: 8px;
+  }
+
+  .left-column,
+  .right-column {
+    padding: 8px;
+  }
 }

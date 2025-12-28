@@ -10,46 +10,105 @@
 {% block content %}
 <div class="left-column">
     <div class="question-full">
-        <div class="question-full__avatar">
-            <img src="https://via.placeholder.com/60">
+        <div class="question-avatar">
+        {% if question.author.avatar %}
+            <img src="{{ question.author.avatar.url }}" alt="avatar">
+        {% else %}
+            <img src="{% static 'avatars/default-avatar.png' %}" alt="avatar">
+        {% endif %}
         </div>
-        <div class="question-full__content">
-            <h2 class="question-full__title">{{ question.title }}</h2>
-            <div class="question-full__body">
+        <div class="question-full-content">
+            <h2 class="question-full-title">{{ question.title }}</h2>
+            <div class="question-full-body">
                 <p>{{ question.detailed }}</p>
             </div>
-            <div class="question-full__meta">
-                <div class="question-full__tags">
+            <div class="question-full-meta">
+                <div class="question-full-tags">
                     {% for tag in question.tags.all %}
-                    <a href="{% url 'tag' tag.title %}" class="tag">{{ tag.title }}</a>
+                    <a href="{% url 'tag' tag.name %}" class="tag">{{ tag.name }}</a>
                     {% endfor %}
                 </div>
-                <div class="question-full__stats">
-                    <span class="question-full__likes">❤️ {{ question.likes_count }}</span>
+                <div class="question-full-stats">
+                    <button
+                        type="button"
+                        class="like-btn like-question-btn {% if question.is_liked %}like-btn--active{% else %}like-btn--inactive{% endif %}"
+                        data-question-id="{{ question.id }}"
+                        data-liked="{% if question.is_liked %}true{% else %}false{% endif %}">
+                        <i class="{% if question.is_liked %}fas{% else %}far{% endif %} fa-heart"></i>
+                    </button>
+                    <span
+                        class="question-full-likes"
+                        id="question-{{ question.id }}-rating">
+                        {{ question.rating }}
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="answers-sort-tabs">
+        <a href="?sort=best"
+        class="answers-sort-tab {% if answers_sort == 'best' %}answers-sort-tab--active{% endif %}">
+            Лучшие ответы
+        </a>
+        <a href="?sort=new"
+        class="answers-sort-tab {% if answers_sort == 'new' %}answers-sort-tab--active{% endif %}">
+            Последние
+        </a>
+    </div>
+
     <div class="answers-section">
-        <h3 class="answers-section__title">Ответы</h3>
+        <h3 class="answers-section-title">Ответы</h3>
 
         {% for answer in answers %}
         <div class="answer">
-            <div class="answer__content">
-                <div class="answer__avatar">
-                    <img src="#">
+            <div class="answer-content">
+                <div class="answer-avatar">
+                    {% if answer.author.avatar %}
+                        <img src="{{ answer.author.avatar.url }}" alt="Текущий аватар" class="settings-current-avatar">
+                    {% else %}
+                        <img src="{% static '/avatars/default-avatar.png' %}" alt="Нет аватара" class="settings-current-avatar">
+                    {% endif %}
                 </div>
-                <div class="answer__main">
-                    <div class="answer__text">
+                <div class="answer-main">
+                    <div class="answer-text">
                         <p>{{ answer.answer_text }}</p>
-                    </div>
-                    <div class="answer__meta">
-                        <span class="answer__likes">❤️ {{ answer.likes_count }}</span>
-                        <div class="answer__checkbox">
-                            <input type="checkbox" id="answer-{{ answer.id }}" class="answer__correct-checkbox">
-                            <label for="answer-{{ answer.id }}" class="answer__checkbox-label">Correct answer</label>
+
+                        {% if answer.is_correct %}
+                            <span class="answer-correct-badge">
+                                <span class="answer-correct-badge-icon">✓</span>
+                                Правильный ответ
+                            </span>
+                        {% endif %}
+                    </div>          
+                    <div class="answer-meta">                       
+                        <div class="answer-like-wrapper">
+                            <button
+                                type="button"
+                                class="like-btn like-answer-btn {% if answer.is_liked %}like-btn--active{% else %}like-btn--inactive{% endif %}"
+                                data-answer-id="{{ answer.id }}"
+                                data-liked="{% if answer.is_liked %}true{% else %}false{% endif %}">
+                                <i class="{% if answer.is_liked %}fas{% else %}far{% endif %} fa-heart"></i>
+                            </button>
+                            <span
+                                class="answer-likes"
+                                id="answer-{{ answer.id }}-rating">
+                                {{ answer.rating }}
+                            </span>
                         </div>
+
+                        {% if user.is_authenticated and user == question.author %}
+                            <button
+                                type="button"
+                                class="answer-mark-correct-btn {% if answer.is_correct %}answer-mark-correct-btn--active{% endif %}"
+                                data-answer-id="{{ answer.id }}">
+                                {% if answer.is_correct %}
+                                    ✓ Правильный ответ
+                                {% else %}
+                                    Отметить как правильный
+                                {% endif %}
+                            </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -60,15 +119,30 @@
     </div>
 
     <div class="your-answer">
-        <h3 class="your-answer__title">Ваш ответ</h3>
-        <form class="your-answer__form">
-            <textarea class="form-textarea" placeholder="Напишите ваш ответ здесь..." rows="8"></textarea>
-            <button type="submit" class="btn btn--submit">Отправить ответ</button>
-        </form>
+        <h3 class="your-answer-title">Ваш ответ</h3>
+        <div class="your-answer">
+        <h3 class="your-answer-title">Ваш ответ</h3>
+        {% if user.is_authenticated %}
+            <form class="your-answer-form" method="post">
+                {% csrf_token %}
+                {{ answer_form.non_field_errors }}
+                {{ answer_form.answer_text.errors }}
+                <textarea
+                    name="answer_text"
+                    class="form-control"
+                    rows="6"
+                    placeholder="Напишите развёрнутый ответ..."></textarea>
+                <button type="submit" class="btn btn--primary">Отправить</button>
+            </form>
+        {% else %}
+            <p>Чтобы оставить ответ, <a href="{% url 'login' %}">войдите</a>.</p>
+        {% endif %}
+    </div>
     </div>
 </div>
 
 <div class="right-column">
     {% include 'sidebar.html' %}
 </div>
+
 {% endblock %}

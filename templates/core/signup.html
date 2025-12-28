@@ -4,44 +4,87 @@
 {% block title %}DevGuru - Регистрация{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/pages/signup.css' %}">
+<link rel="stylesheet" href="{% static 'css/pages/auth.css' %}">
 {% endblock %}
 
-{% block content %}
-<div class="left-column">
-    <div class="registration">
-        <h2 class="registration__title">Registration</h2>
-        <div class="error-message">
-            Логин уже занят. Пожалуйста, выберите другой логин.
-        </div>
-        <form class="registration__form" method="POST" action="{% url 'register' %}">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="username" class="form-label">Login</label>
-                <input type="text" id="username" name="username" class="form-input" placeholder="Введите ваш логин">
-            </div>
-            <div class="form-group">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" name="email" class="form-input" placeholder="Введите ваш email">
-            </div>
-            <div class="form-group">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" name="password" class="form-input" placeholder="Введите ваш пароль">
-            </div>
-            <div class="form-group">
-                <label for="reg-repeat-password" class="form-label">Repeat Password</label>
-                <input type="password" id="reg-repeat-password" class="form-input" placeholder="Повторите ваш пароль">
-            </div>
-            <div class="form-group">
-                <label for="reg-avatar" class="form-label">Upload Avatar</label>
-                <input type="file" id="reg-avatar" class="form-file" accept="image/*">
-            </div>
-            <button type="submit" class="btn">Register</button>
-        </form>
-    </div>
-</div>
+Для регистрации лучше использовать те же .auth-* классы, что и для логина, вместо сетки left-column/right-column. Тогда страница будет в одном стиле.
 
-<div class="right-column">
-    {% include 'sidebar.html' %}
+Как переписать шаблон регистрации
+Замените блок content в signup.html на:
+
+text
+{% block content %}
+<div class="auth-container">
+  <div class="auth-card">
+    <h1 class="auth-title">Регистрация</h1>
+    <p class="auth-subtitle">Создайте аккаунт, чтобы задавать вопросы и отвечать.</p>
+
+    <form class="auth-form" method="POST" action="{% url 'signup' %}">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="auth-error">
+          {% for error in form.non_field_errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="auth-group">
+        <label for="{{ form.username.id_for_label }}" class="auth-label">Имя пользователя</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+          <div class="form-error">
+            {% for error in form.username.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="auth-group">
+        <label for="{{ form.email.id_for_label }}" class="auth-label">Email</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+          <div class="form-error">
+            {% for error in form.email.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="auth-group">
+        <label for="{{ form.password1.id_for_label }}" class="auth-label">Пароль</label>
+        {{ form.password1 }}
+        {% if form.password1.errors %}
+          <div class="form-error">
+            {% for error in form.password1.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="auth-group">
+        <label for="{{ form.password2.id_for_label }}" class="auth-label">Повторите пароль</label>
+        {{ form.password2 }}
+        {% if form.password2.errors %}
+          <div class="form-error">
+            {% for error in form.password2.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="auth-submit">Зарегистрироваться</button>
+
+      <p class="auth-link">
+        Уже есть аккаунт?
+        <a href="{% url 'login' %}">Войти</a>
+      </p>
+    </form>
+  </div>
 </div>
 {% endblock %}

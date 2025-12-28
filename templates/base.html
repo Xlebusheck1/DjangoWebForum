@@ -5,46 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}DevGuru{% endblock %}</title>
     {% load static %}
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/header.css' %}">
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
-    <link rel="stylesheet" href="{% static 'css/question.css' %}">
+    <link rel="stylesheet" href="{% static 'css/questions.css' %}">
     <link rel="stylesheet" href="{% static 'css/pagination.css' %}">
-    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
     <link rel="stylesheet" href="{% static 'css/navigation.css' %}">
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer" />
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <header class="header">
-        <h1 class="header__logo" onclick="location.href='{% url 'index' %}'">DevGuru</h1>
-        <form class="header__search-form">
-            <input type="text" class="header__search-input" placeholder="Поиск по сайту...">
-        </form>
-        
-        {% if is_authenticated %}
-            <button class="header__ask-btn" onclick="location.href='{% url 'ask' %}'">ASK</button>
-            <div class="header__user-menu">
-                <img src="#" alt="Аватар" class="header__user-avatar">
-                <span class="header__user-name">{{ username }}</span>
-                <a href="{% url 'settings' %}" class="header__user-link">settings</a>
-                <a href="{% url 'logout' %}" class="header__user-link">log out</a>
-            </div>
-        {% else %}
-            <button class="header__ask-btn" onclick="location.href='{% url 'signup' %}'">ASK</button>
-            <div class="header__user-menu">
-                <a href="{% url 'login' %}" class="header__user-link">log in</a>
-                <a href="{% url 'signup' %}" class="header__user-link">register</a>
-            </div>
-        {% endif %}
-    </header>
+    {% include 'header.html' %}
 
-    <hr class="header__divider">
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
     <main class="main-container">
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
 
-    <footer></footer>
+    <footer></footer> 
+
+    <script src="{% static 'js/tags_filter.js' %}"></script>
+    <script src="{% static 'js/likes.js' %}"></script>
+    <script src="{% static 'js/live_search.js' %}"></script>
+    <script src="{% static 'js/theme.js' %}"></script>
 </body>
 </html>
