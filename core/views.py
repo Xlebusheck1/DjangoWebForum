@@ -1,4 +1,5 @@
-from django.http import JsonResponse
+import json
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.generic import TemplateView
@@ -13,6 +14,11 @@ from django.contrib.auth import update_session_auth_hash
 from django.views import View
 from django.db.models import Count, Exists, OuterRef, Q
 from .models import Answer, AnswerLike, QuestionLike
+from .burst import BurstMixin
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+from django.db.models import BooleanField, ExpressionWrapper, Value, Exists, OuterRef
+from core.caches import TagCache
 User = get_user_model()
 
 
@@ -62,14 +68,26 @@ def paginate(objects_list, request, per_page=10):
 
 
 # Возвращает самые популярные теги по количеству связанных вопросов.
-def get_popular_tags():    
-    return Tag.objects.annotate(
-        questions_count=Count('question')
-    ).order_by('-questions_count')[:10]
-
+def get_popular_tags():
+    tags_data = TagCache.get_items()
+    ids = [t["id"] for t in tags_data]
+    qs = (Tag.objects
+          .filter(id__in=ids)
+          .annotate(questions_count=Count("question"))
+          .order_by("-questions_count"))[:10]
+    return qs
 
 # Возвращает список топ‑пользователей с их текущим рангом и изменением позиции.
+
+
+TOP_USERS_CACHE_KEY = "top_users"
+TOP_USERS_TIMEOUT = 60 
 def get_top_users(limit=5):
+    cache_key = f"{TOP_USERS_CACHE_KEY}:{limit}"
+    data = cache.get(cache_key)
+    if data is not None:
+        return data
+
     users = list(User.objects.order_by("-rating", "id"))
     top = users[:limit]
 
@@ -77,14 +95,14 @@ def get_top_users(limit=5):
     for index, user in enumerate(top, start=1):
         current_rank = index
         old_rank = user.rank or current_rank
-        diff = old_rank - current_rank 
+        diff = old_rank - current_rank
         result.append((user, current_rank, diff))
-    return result
 
+    cache.set(cache_key, result, TOP_USERS_TIMEOUT)
+    return result
 
 # Главная страница с лентой новых вопросов.
 @method_decorator(never_cache, name='dispatch')
-@method_decorator(login_required, name='dispatch')
 class IndexView(TemplateView):
     template_name = 'core/index.html'
 
@@ -92,11 +110,10 @@ class IndexView(TemplateView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
 
-        questions = (
-            Question.objects
-            .all()
-            .order_by('-created_at')
-            .annotate(
+        base_qs = Question.objects.all().order_by('-created_at')
+
+        if user.is_authenticated:
+            questions = base_qs.annotate(
                 is_liked=Exists(
                     QuestionLike.objects.filter(
                         author=user,
@@ -105,7 +122,14 @@ class IndexView(TemplateView):
                     )
                 )
             )
-        )
+        else:
+            questions = base_qs.annotate(
+                is_liked=ExpressionWrapper(
+                    Value(False),
+                    output_field=BooleanField(),
+                )
+            )
+
         page_obj = paginate(questions, self.request, 5)
 
         context.update({
@@ -113,10 +137,8 @@ class IndexView(TemplateView):
             'is_authenticated': user.is_authenticated,
             'username': user.username if user.is_authenticated else '',
             'current_sort': 'new',
-            'popular_tags': Tag.objects.annotate(
-                questions_count=Count('question')
-            ).order_by('-questions_count')[:10],
-            'top_users': get_top_users() 
+            'popular_tags': get_popular_tags(),
+            'top_users': get_top_users(),
         })
         return context
 
@@ -124,17 +146,19 @@ class IndexView(TemplateView):
 # Страница с «горячими» вопросами, отсортированными по лайкам.
 class HotView(TemplateView):
     template_name = 'core/index.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        is_authenticated = self.request.user.is_authenticated
-        username = self.request.user.username if is_authenticated else ''
-
         user = self.request.user
-        questions = (
-            Question.objects
-            .annotate(
-                likes_count=Count('likes'),
+        is_authenticated = user.is_authenticated
+        username = user.username if is_authenticated else ''
+
+        base_qs = Question.objects.annotate(
+            likes_count=Count('likes'),
+        ).order_by('-likes_count', '-created_at')
+
+        if user.is_authenticated:
+            questions = base_qs.annotate(
                 is_liked=Exists(
                     QuestionLike.objects.filter(
                         author=user,
@@ -143,8 +167,14 @@ class HotView(TemplateView):
                     )
                 )
             )
-            .order_by('-likes_count', '-created_at')
-        )
+        else:
+            questions = base_qs.annotate(
+                is_liked=ExpressionWrapper(
+                    Value(False),
+                    output_field=BooleanField(),
+                )
+            )
+
         page_obj = paginate(questions, self.request, 5)
 
         context.update({
@@ -161,19 +191,20 @@ class HotView(TemplateView):
 # Страница списка вопросов по конкретному тегу.
 class TagView(TemplateView):
     template_name = 'core/tag.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        is_authenticated = self.request.user.is_authenticated
-        username = self.request.user.username if is_authenticated else ''
+        user = self.request.user
+        is_authenticated = user.is_authenticated
+        username = user.username if is_authenticated else ''
         tag_name = kwargs.get('tag_name')
 
-        user = self.request.user
-        questions = (
-            Question.objects
-            .filter(tags__name=tag_name)
-            .order_by('-created_at')
-            .annotate(
+        base_qs = (Question.objects
+                   .filter(tags__name=tag_name)
+                   .order_by('-created_at'))
+
+        if user.is_authenticated:
+            questions = base_qs.annotate(
                 is_liked=Exists(
                     QuestionLike.objects.filter(
                         author=user,
@@ -182,13 +213,20 @@ class TagView(TemplateView):
                     )
                 )
             )
-        )
+        else:
+            questions = base_qs.annotate(
+                is_liked=ExpressionWrapper(
+                    Value(False),
+                    output_field=BooleanField(),
+                )
+            )
+
         page_obj = paginate(questions, self.request, 5)
 
         context.update({
             'questions': page_obj,
             'tag_name': tag_name,
-            'is _authenticated': is_authenticated,
+            'is_authenticated': is_authenticated,
             'username': username,
             'popular_tags': get_popular_tags(),
             'top_users': get_top_users(),
@@ -275,50 +313,53 @@ class QuestionView(TemplateView):
         return self.render_to_response(context)
     
 
-# Страница создания нового вопроса (форма Ask).
+ASK_FORM_SESSION_KEY = "ask_form_data"
+
 @method_decorator(login_required, name='dispatch')
-class AskView(TemplateView):
+class AskView(BurstMixin, TemplateView):
     http_method_names = ['get', 'post']
     template_name = 'core/ask.html'
-    
+    burst_key = 'ask'
+    limits = {'minute': 10}
+
     def dispatch(self, request, *args, **kwargs):
-        is_authenticated = request.user.is_authenticated
         if not request.user.is_authenticated:
             return redirect('login')
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         is_authenticated = self.request.user.is_authenticated
-        username = self.request.user.username if is_authenticated else ''    
-        context['form'] = QuestionForm()        
-        context['tags'] = Tag.objects.all()
-        context['popular_tags'] = get_popular_tags()
-        context['top_users'] = get_top_users()
-        context['is_authenticated'] = is_authenticated
-        context['username'] = username
+        username = self.request.user.username if is_authenticated else ''
+        data = self.request.session.get(ASK_FORM_SESSION_KEY)
+        form = QuestionForm(initial=data) if data else QuestionForm()
+        context.update({
+            'form': form,
+            'tags': Tag.objects.all(),
+            'popular_tags': get_popular_tags(),
+            'top_users': get_top_users(),
+            'is_authenticated': is_authenticated,
+            'username': username,
+        })
         return context
-    
-    # Обрабатывает отправку формы создания нового вопроса.
+
     def post(self, request, *args, **kwargs):
         form = QuestionForm(request.POST)
-        if form.is_valid():           
+        request.session[ASK_FORM_SESSION_KEY] = request.POST.dict()
+        if form.is_valid():
             title = form.cleaned_data['title']
             detailed = form.cleaned_data['detailed']
-          
             question = Question.objects.create(
                 title=title,
                 detailed=detailed,
                 author=request.user
             )
-           
             tag_ids = request.POST.get('tags', '')
             tag_ids = [int(t) for t in tag_ids.split(',') if t.isdigit()]
-            question.tags.set(tag_ids)  
+            question.tags.set(tag_ids)
+            request.session.pop(ASK_FORM_SESSION_KEY, None)
             return redirect('index')
-        
         return render(request, self.template_name, {'form': form, 'tags': Tag.objects.all()})
-
 
 # Страница смены пароля пользователя.
 @method_decorator(login_required, name='dispatch')
@@ -374,6 +415,7 @@ class SettingsView(TemplateView):
 
 
 # Страница авторизации (логин пользователя).
+@method_decorator(cache_page(60 * 5), name="get")
 class AuthView(TemplateView):
     http_method_names = ['get', 'post']
     template_name = 'core/auth.html'
@@ -404,6 +446,7 @@ def logout_view(request):
     
 
 # Страница регистрации нового пользователя.
+@method_decorator(cache_page(60 * 5), name="get")
 class SignupView(TemplateView):
     http_method_names = ['get', 'post']
     template_name = 'core/signup.html'

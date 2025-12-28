@@ -119,9 +119,7 @@
     </div>
 
     <div class="your-answer">
-        <h3 class="your-answer-title">Ваш ответ</h3>
-        <div class="your-answer">
-        <h3 class="your-answer-title">Ваш ответ</h3>
+        <h3 class="your-answer-title">Ваш ответ</h3>        
         {% if user.is_authenticated %}
             <form class="your-answer-form" method="post">
                 {% csrf_token %}
@@ -136,8 +134,7 @@
             </form>
         {% else %}
             <p>Чтобы оставить ответ, <a href="{% url 'login' %}">войдите</a>.</p>
-        {% endif %}
-    </div>
+        {% endif %}    
     </div>
 </div>
 

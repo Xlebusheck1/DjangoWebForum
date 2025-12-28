@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+from configparser import ConfigParser
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -12,6 +13,7 @@ ALLOWED_HOSTS = [
     '172.16.244.87',
     'localhost',
     '127.0.0.1',
+    'devguru.local'
 ]
 
 INSTALLED_APPS = [
@@ -103,10 +105,24 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+config = ConfigParser()
+config.read(os.path.join(BASE_DIR, 'conf', 'local.conf'))
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": config.get('redis', 'LOCATION', fallback='redis://127.0.0.1:6379/1'),
+        "TIMEOUT": config.getint('redis', 'LIFETIME', fallback=9660),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "KEY_PREFIX": config.get('redis', 'PREFIX', fallback='DevGuru'),
+    }
+}
