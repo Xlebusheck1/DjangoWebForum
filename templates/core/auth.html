@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/auth.css' %}">
+{% endblock %}
+{% block title %}DevGuru - Вход{% endblock %}
+
+{% block content %}
+<div class="left-column">
+    <div class="login">        
+
+        <form class="login-form" method="POST" action="{% url 'login' %}">
+            {% csrf_token %}       
+            
+            {% if form.non_field_errors %}
+            <div class="alert alert-error">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for={{ form.username.id_for_label }} class="form-label">Username</label>
+                {{ form.username }}
+
+                {% if form.username.errors %}
+                <div style="color: red; font-size: 0.875rem;">
+                    {% for error in form.username.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for={{ form.password.id_for_label }} class="form-label">Password</label>
+                {{ form.password }}
+
+                {% if form.password.errors %}
+                <div style="color: red; font-size: 0.875rem;">
+                    {% for error in form.password.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+            </div>
+
+            <button type="submit" class="btn">Log in</button>            
+            <a href="{% url 'signup' %}" class="login-register-link">register new account</a>
+        </form>
+
+    </div>
+</div>
+
+<div class="right-column">
+    {% include 'sidebar.html' %}
+</div>
+{% endblock %}

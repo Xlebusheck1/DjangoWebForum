@@ -10,45 +10,45 @@
 {% block content %}
 <div class="left-column">
     <div class="question-full">
-        <div class="question-full__avatar">
+        <div class="question-full-avatar">
             <img src="https://via.placeholder.com/60">
         </div>
-        <div class="question-full__content">
-            <h2 class="question-full__title">{{ question.title }}</h2>
-            <div class="question-full__body">
+        <div class="question-full-content">
+            <h2 class="question-full-title">{{ question.title }}</h2>
+            <div class="question-full-body">
                 <p>{{ question.detailed }}</p>
             </div>
-            <div class="question-full__meta">
-                <div class="question-full__tags">
+            <div class="question-full-meta">
+                <div class="question-full-tags">
                     {% for tag in question.tags.all %}
-                    <a href="{% url 'tag' tag.title %}" class="tag">{{ tag.title }}</a>
+                    <a href="{% url 'tag' tag.name %}" class="tag">{{ tag.name }}</a>
                     {% endfor %}
                 </div>
-                <div class="question-full__stats">
-                    <span class="question-full__likes">❤️ {{ question.likes_count }}</span>
+                <div class="question-full-stats">
+                    <span class="question-full-likes">❤️ {{ question.likes_count }}</span>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="answers-section">
-        <h3 class="answers-section__title">Ответы</h3>
+        <h3 class="answers-section-title">Ответы</h3>
 
         {% for answer in answers %}
         <div class="answer">
-            <div class="answer__content">
-                <div class="answer__avatar">
+            <div class="answer-content">
+                <div class="answer-avatar">
                     <img src="#">
                 </div>
-                <div class="answer__main">
-                    <div class="answer__text">
+                <div class="answer-main">
+                    <div class="answer-text">
                         <p>{{ answer.answer_text }}</p>
                     </div>
-                    <div class="answer__meta">
-                        <span class="answer__likes">❤️ {{ answer.likes_count }}</span>
-                        <div class="answer__checkbox">
-                            <input type="checkbox" id="answer-{{ answer.id }}" class="answer__correct-checkbox">
-                            <label for="answer-{{ answer.id }}" class="answer__checkbox-label">Correct answer</label>
+                    <div class="answer-meta">
+                        <span class="answer-likes">❤️ {{ answer.likes_count }}</span>
+                        <div class="answer-checkbox">
+                            <input type="checkbox" id="answer-{{ answer.id }}" class="answer-correct-checkbox">
+                            <label for="answer-{{ answer.id }}" class="answer-checkbox-label">Correct answer</label>
                         </div>
                     </div>
                 </div>
@@ -60,8 +60,8 @@
     </div>
 
     <div class="your-answer">
-        <h3 class="your-answer__title">Ваш ответ</h3>
-        <form class="your-answer__form">
+        <h3 class="your-answer-title">Ваш ответ</h3>
+        <form class="your-answer-form">
             <textarea class="form-textarea" placeholder="Напишите ваш ответ здесь..." rows="8"></textarea>
             <button type="submit" class="btn btn--submit">Отправить ответ</button>
         </form>

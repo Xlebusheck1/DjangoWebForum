@@ -3,6 +3,13 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views.generic import TemplateView
 from django.db.models import Count
 from core.models import Question, Tag
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from core.forms import LoginForm, QuestionForm, SignupForm, SettingsForm, PasswordChangeForm
+from django.contrib.auth import login, logout
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 
 def paginate(objects_list, request, per_page=10):
     paginator = Paginator(objects_list, per_page)
@@ -22,13 +29,16 @@ def get_popular_tags():
         questions_count=Count('question')
     ).order_by('-questions_count')[:10]
 
+
+@method_decorator(never_cache, name='dispatch')
+@method_decorator(login_required, name='dispatch')
 class IndexView(TemplateView):
     template_name = 'core/index.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        is_authenticated = self.request.session.get('is_authenticated', True)
-        username = self.request.session.get('username', 'user') if is_authenticated else ''        
+        is_authenticated = self.request.user.is_authenticated
+        username = self.request.user.username if is_authenticated else ''      
        
         questions = Question.objects.all().order_by('-created_at')
         page_obj = paginate(questions, self.request, 5)
@@ -42,13 +52,14 @@ class IndexView(TemplateView):
         })
         return context
 
+
 class HotView(TemplateView):
     template_name = 'core/index.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        is_authenticated = self.request.session.get('is_authenticated', True)
-        username = self.request.session.get('username', 'user') if is_authenticated else ''
+        is_authenticated = self.request.user.is_authenticated
+        username = self.request.user.username if is_authenticated else ''
         
         
         questions = Question.objects.annotate(
@@ -65,16 +76,17 @@ class HotView(TemplateView):
         })
         return context
 
+
 class TagView(TemplateView):
     template_name = 'core/tag.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        is_authenticated = self.request.session.get('is_authenticated', True)
-        username = self.request.session.get('username', 'user') if is_authenticated else ''
+        is_authenticated = self.request.user.is_authenticated
+        username = self.request.user.username if is_authenticated else ''
         tag_name = kwargs.get('tag_name')
         
-        questions = Question.objects.filter(tags__title=tag_name).order_by('-created_at')
+        questions = Question.objects.filter(tags__name=tag_name).order_by('-created_at')
         page_obj = paginate(questions, self.request, 5)
         
         context.update({
@@ -92,8 +104,8 @@ class QuestionView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        is_authenticated = self.request.session.get('is_authenticated', True)
-        username = self.request.session.get('username', 'user') if is_authenticated else ''
+        is_authenticated = self.request.user.is_authenticated
+        username = self.request.user.username if is_authenticated else ''
         question_id = kwargs.get('question_id')
         
         try:
@@ -115,69 +127,140 @@ class QuestionView(TemplateView):
             
         return context
     
-class LoginView(TemplateView):
-    template_name = 'core/login.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update({
-            'is_authenticated': self.request.session.get('is_authenticated', False),
-            'username': '',
-            'popular_tags': get_popular_tags()
-        })
-        return context
 
-class SignupView(TemplateView):
-    template_name = 'core/signup.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update({
-            'is_authenticated': self.request.session.get('is_authenticated', False),
-            'username': '',
-            'popular_tags': get_popular_tags()
-        })
-        return context
-
+@method_decorator(login_required, name='dispatch')
 class AskView(TemplateView):
+    http_method_names = ['get', 'post']
     template_name = 'core/ask.html'
     
     def dispatch(self, request, *args, **kwargs):
-        is_authenticated = request.session.get('is_authenticated', True)
-        if not is_authenticated:
-            return redirect('signup')
-        return super().dispatch(request, *args, **kwargs)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        is_authenticated = self.request.session.get('is_authenticated', True)
-            
-        context.update({
-            'is_authenticated': is_authenticated,
-            'username': self.request.session.get('username', 'user'),
-            'popular_tags': get_popular_tags()
-        })
-        return context
-
-class SettingsView(TemplateView):
-    template_name = 'core/settings.html'
-    
-    def dispatch(self, request, *args, **kwargs):
-        is_authenticated = request.session.get('is_authenticated', True)
-        if not is_authenticated:
+        is_authenticated = request.user.is_authenticated
+        if not request.user.is_authenticated:
             return redirect('login')
         return super().dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        is_authenticated = self.request.session.get('is_authenticated', True)
-            
+        is_authenticated = self.request.user.is_authenticated
+        username = self.request.user.username if is_authenticated else ''    
+        context['form'] = QuestionForm()        
+        context['tags'] = Tag.objects.all()
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        form = QuestionForm(request.POST)
+        if form.is_valid():           
+            title = form.cleaned_data['title']
+            detailed = form.cleaned_data['detailed']
+          
+            question = Question.objects.create(
+                title=title,
+                detailed=detailed,
+                author=request.user
+            )
+           
+            tag_ids = request.POST.get('tags', '')
+            tag_ids = [int(t) for t in tag_ids.split(',') if t.isdigit()]
+            question.tags.set(tag_ids)  
+            return redirect('index')
+        
+        return render(request, self.template_name, {'form': form, 'tags': Tag.objects.all()})
+    
+@method_decorator(login_required, name='dispatch')
+class PasswordChangeView(TemplateView):
+    template_name = 'core/change_password.html'
+
+    def get(self, request, *args, **kwargs):
+        form = PasswordChangeForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = PasswordChangeForm(request.POST)
+        if form.is_valid():
+            user = form.save(request.user)            
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Пароль успешно изменён')
+            return redirect('settings') 
+        return render(request, self.template_name, {'form': form})
+
+
+@method_decorator(login_required, name='dispatch')
+class SettingsView(TemplateView):
+    template_name = 'core/settings.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        is_authenticated = request.user.is_authenticated
+        if not request.user.is_authenticated:
+            return redirect('login')
+        return super().dispatch(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        form = SettingsForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('index') 
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        is_authenticated = self.request.user.is_authenticated
+        username = self.request.user.username if is_authenticated else ''
         context.update({
             'is_authenticated': is_authenticated,
-            'username': self.request.session.get('username', 'user'),
+            'username': username,
             'popular_tags': get_popular_tags()
         })
+        context['form'] = SettingsForm(instance=self.request.user)
         return context
+
+
+class AuthView(TemplateView):
+    http_method_names = ['get', 'post']
+    template_name = 'core/auth.html'
+
+    def get_context_data(self, **kwargs):
+        form = LoginForm()
+        context = super(AuthView, self).get_context_data(**kwargs)
+        context['form'] = form
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            login(request, form.user)
+            messages.add_message(request, messages.SUCCESS , "Успешная авторизация")
+            return redirect('/')
+        
+        return render(request, template_name='core/auth.html', context={'form': form})
+
+@login_required()
+def logout_view(request):
+    if request.method == 'POST':
+        logout(request)
+        return redirect('/')
+
+
+class SignupView(TemplateView):
+    http_method_names = ['get', 'post']
+    template_name = 'core/signup.html'
+
+    def get_context_data(self, **kwargs):
+        form = SignupForm()
+        context = super(SignupView, self).get_context_data(**kwargs)
+        context['form'] = form
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.add_message(request, messages.SUCCESS , "Успешная регистрация")
+            return redirect('/')
+        
+        return render(request, template_name='core/signup.html', context={'form': form})
+
 
 def like_question(request, question_id):
     if request.method == 'POST' and request.session.get('is_authenticated'):
@@ -191,21 +274,3 @@ def like_answer(request, answer_id):
         return redirect('question', question_id=request.POST.get('question_id'))
     return redirect('login')
 
-def process_login(request):
-    if request.method == 'POST':
-        request.session['is_authenticated'] = True
-        request.session['username'] = 'user'
-        return redirect('index')
-    return redirect('login')
-
-def register_user(request):
-    if request.method == 'POST':
-        request.session['is_authenticated'] = True
-        request.session['username'] = 'user'
-        return redirect('index')
-    return redirect('signup')
-
-def logout_view(request):
-    request.session['is_authenticated'] = False
-    request.session['username'] = ''
-    return redirect('index')

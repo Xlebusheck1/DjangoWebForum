@@ -1,31 +1,31 @@
 <div class="sidebar-block">
-    <h3 class="sidebar-block__title">Популярные теги</h3>
-    <div class="tags-container">
+    <h3 class="sidebar-block-title">Популярные теги</h3>
+    <div class="sidebar-tags-container">
         {% for tag in popular_tags %}
-        <a href="{% url 'tag' tag.title %}" class="tag">{{ tag.title }}</a>
+        <a href="{% url 'tag' tag.name %}" class="sidebar-tag">{{ tag.name }}</a>
         {% empty %}
-        <span class="no-tags">Тегов пока нет</span>
+        <span class="sidebar-notags">Тегов пока нет</span>
         {% endfor %}
     </div>
 </div>
 
 <div class="sidebar-block">
-    <h3 class="sidebar-block__title">Лучшие пользователи</h3>
-    <div class="users-list">
-        <a href="#" class="user-profile">
-            <img src="#" alt="Аватар" class="user-profile__avatar">
+    <h3 class="sidebar-block-title">Лучшие пользователи</h3>
+    <div class="sidebar-users-list">
+        <a href="#" class="sidebar-user-profile">
+            <img src="#" alt="Аватар" class="sidebar-user-avatar">
             <span>Ignat Vaschilo</span>
         </a>
-        <a href="#" class="user-profile">
-            <img src="#" alt="Аватар" class="user-profile__avatar">
+        <a href="#" class="sidebar-user-profile">
+            <img src="#" alt="Аватар" class="sidebar-user-avatar">
             <span>Dr.Penis</span>
         </a>
-        <a href="#" class="user-profile">
-            <img src="#" alt="Аватар" class="user-profile__avatar">
+        <a href="#" class="sidebar-user-profile">
+            <img src="#" alt="Аватар" class="sidebar-user-avatar">
             <span>Annihilator3000</span>
         </a>
-        <a href="#" class="user-profile">
-            <img src="#" alt="Аватар" class="user-profile__avatar">
+        <a href="#" class="sidebar-user-profile">
+            <img src="#" alt="Аватар" class="sidebar-user-avatar">
             <span>OOO"Бнал"</span>
         </a>
     </div>

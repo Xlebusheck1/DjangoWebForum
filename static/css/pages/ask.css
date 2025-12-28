@@ -1,51 +1,135 @@
-.new-question {
-    background: #fff;
-    border: 1px solid #ddd;
+.ask-left {
+    padding: 20px;
+    border-right: 1px solid #e8e4dd;
+    min-height: 600px;
+}
+
+.ask-right {
+    padding: 20px;
+}
+
+.ask-mainblock {
+    background: #ffffff;
+    border: 1px solid #e8e4dd;
     border-radius: 8px;
     padding: 30px;
     margin-bottom: 20px;
 }
 
-.new-question__title {
-    color: #081924;
+.ask-title {
+    color: #2c2c2c;
     font-size: 1.8rem;
     margin-bottom: 25px;
     text-align: center;
+    font-weight: 600;
 }
 
-.new-question__form {
+.ask-form {
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 18px;
 }
 
-.tags-selection {
+.ask-formgroup {
+    margin-bottom: 18px;
+}
+
+.ask-label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #2c2c2c;
+    font-size: 0.95rem;
+}
+
+.ask-input,
+.ask-form input[type="text"],
+.ask-form input[type="email"],
+.ask-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e8e4dd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: #2c2c2c;
+    background-color: #ffffff;
+    transition: border-color 0.3s ease;
+}
+
+.ask-form textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.ask-input:focus,
+.ask-form input:focus,
+.ask-form textarea:focus {
+    border-color: #d4704d;
+    outline: 2px solid #d4704d;
+}
+
+.ask-error {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+.ask-tagscontainer {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 8px;
     margin-top: 10px;
 }
 
-.tag-option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.tag-label {
-    color: #081924;
+.ask-tag {
+    background: #f0ebe5;
+    color: #2c2c2c;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
     cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 15px;
-    background: #e9ecef;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
+    border: none;
+    outline: none;
+    text-decoration: none;
+    display: inline-block;
 }
 
-.tag-option input[type="checkbox"] {
-    display: none;
+.ask-tag:hover {
+    background: #d9d4cc;
 }
 
-.tag-option input[type="checkbox"]:checked+.tag-label {
-    background: #326183;
+.ask-tag.selected {
+    background: #d4704d;
+    color: #ffffff;
+}
+
+.ask-btn-submit {
+    align-self: flex-start;
+    padding: 12px 24px;
+    font-size: 1.05rem;
+    border: none;
+    border-radius: 6px;
+    background-color: #d4704d;
     color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+.ask-btn-submit:hover {
+    background-color: #b8563a;
+}
+
+.ask-btn-submit:active {
+    background-color: #8b3f26;
+}
+
+#ask-tagchoices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
 }

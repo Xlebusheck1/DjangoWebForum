@@ -1,0 +1,29 @@
+<header class="header">
+    <h1 class="header-logo" onclick="location.href='{% url 'index' %}'">DevGuru</h1>
+    <form class="header-search-form">
+        <input type="text" class="header-search-input" placeholder="Поиск по сайту...">
+    </form>
+    
+    {% if user.is_authenticated %}            
+        <button class="header-ask-btn" onclick="location.href='{% url 'ask' %}'">ASK</button>
+        <div class="header-user-menu">
+            
+            <img src="#" alt="Аватар" class="header-user-avatar">
+            <span class="header-user-name">{{ user.username }}</span>
+
+            <a href="{% url 'settings' %}" class="header-user-link">settings</a>
+
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button class='btn' type='submit'>log out</button>
+            </form>
+
+        </div>
+    {% else %}
+        <button class="header-ask-btn" onclick="location.href='{% url 'signup' %}'">ASK</button>
+        <div class="header-user-menu">
+            <a href="{% url 'login' %}" class="header-user-link">log in</a>
+            <a href="{% url 'signup' %}" class="header-user-link">register</a>
+        </div>
+    {% endif %}
+</header>

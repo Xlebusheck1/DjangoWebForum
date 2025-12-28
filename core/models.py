@@ -10,11 +10,13 @@ class DefaultModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Время создания", null=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Время обновления", null=True, editable=False)
 
+
 class User(AbstractUser):
     avatar = models.ImageField(upload_to='avatars', null=True, blank=True)
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
 
 class Question(DefaultModel):
     class Meta:
@@ -50,20 +52,23 @@ class Answer(DefaultModel):
     def likes_count(self):
         return self.likes.count()
 
+
 class Tag(models.Model):
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
-    title = models.CharField(max_length=200, verbose_name="Название тега")
+    name = models.CharField(max_length=200, verbose_name="Название тега")
 
     def __str__(self):
-        return self.title
+        return self.name
+
 
 class QuestionLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
 
 class AnswerLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

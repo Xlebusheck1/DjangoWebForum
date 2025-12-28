@@ -1,0 +1,115 @@
+.question-item {
+    background: #ffffff;
+    border: 1px solid #e8e4dd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+}
+
+.question-item:hover {
+    box-shadow: 0 8px 30px rgba(212, 112, 77, 0.12);
+    transform: translateY(-4px);
+    border-color: #d4704d;
+}
+
+.question-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid #e8e4dd;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.question-item:hover .question-avatar {
+    border-color: #d4704d;
+    box-shadow: 0 4px 12px rgba(212, 112, 77, 0.2);
+}
+
+.question-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.question-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #2c2c2c;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    line-height: 1.4;
+}
+
+.question-title:hover {
+    color: #d4704d;
+}
+
+.question-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: #5c5c5c;
+}
+
+.question-author {
+    font-weight: 700;
+    color: #2c2c2c;
+}
+
+.question-stats {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f0ebe5;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.stat-value {
+    color: #d4704d;
+}
+
+.question-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.tag {
+    background: linear-gradient(135deg, #f0ebe5 0%, #e8dfd8 100%);
+    color: #2c2c2c;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.tag:hover {
+    background: linear-gradient(135deg, #d4704d 0%, #b8563a 100%);
+    color: #ffffff;
+    transform: scale(1.05);
+}

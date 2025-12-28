@@ -4,42 +4,55 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/pages/ask.css' %}">
 {% endblock %}
+
 {% block title %}DevGuru - Новый вопрос{% endblock %}
 
 {% block content %}
-<div class="left-column">
-    <div class="new-question">
-        <h2 class="new-question__title">New Question</h2>
-        <form class="new-question__form">
-            <div class="form-group">
-                <label for="question-title" class="form-label">Question Title</label>
-                <input type="text" id="question-title" class="form-input" placeholder="Введите заголовок вопроса">
-            </div>
-            <div class="form-group">
-                <label for="question-content" class="form-label">Question Content</label>
-                <textarea id="question-content" class="form-textarea" placeholder="Опишите ваш вопрос подробно..." rows="10"></textarea>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Select Tags</label>
-                <div class="tags-selection">
-                    <div class="tag-option">
-                        <input type="checkbox" id="tag-js" name="tags" value="JavaScript">
-                        <label for="tag-js" class="tag-label">JavaScript</label>
-                    </div>
-                    <div class="tag-option">
-                        <input type="checkbox" id="tag-python" name="tags" value="Python">
-                        <label for="tag-python" class="tag-label">Python</label>
-                    </div>
-                    <div class="tag-option">
-                        <input type="checkbox" id="tag-css" name="tags" value="CSS">
-                        <label for="tag-css" class="tag-label">CSS</label>
-                    </div>
+<div class="ask-left">
+    <div class="ask-mainblock">
+        <h2 class="ask-title">New Question</h2>
+        <form method="POST" class="ask-form">
+            {% csrf_token %}
+
+            <div class="ask-formgroup">
+                <label for="{{ form.title.id_for_label }}" class="ask-label">Заголовок вопроса</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <div class="ask-error">
+                    {% for error in form.title.errors %}
+                        {{ error }}
+                    {% endfor %}
                 </div>
+                {% endif %}
             </div>
-            <button type="submit" class="btn btn--submit">ASK</button>
+
+            <div class="ask-formgroup">
+                <label for="{{ form.detailed.id_for_label }}" class="ask-label">Описание вопроса</label>
+                {{ form.detailed }}
+                {% if form.detailed.errors %}
+                <div class="ask-error">
+                    {% for error in form.detailed.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="ask-formgroup">
+                <label class="ask-label">Теги</label>
+                <input type="text" id="ask-tagsearch" class="ask-input" placeholder="Начните набирать для поиска...">
+                <div id="ask-tagchoices" class="ask-tagscontainer">
+                    {% for tag in tags %}
+                    <div class="ask-tag" data-tag-id="{{ tag.id }}" tabindex="0">{{ tag.name }}</div>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="tags" id="id_tags">
+            </div>
+
+            <button type="submit" class="ask-btn-submit">ASK</button>
+
         </form>
     </div>
 </div>
-
-<div class="right-column"></div>
+<div class="ask-right"></div>
 {% endblock %}
