@@ -18,8 +18,6 @@ sleep 2
 echo "   Redis: $(redis-cli ping 2>/dev/null || echo 'FAILED')"
 
 echo "3. Запуск Centrifugo..."
-# Проверяем версию
-centrifugo --version
 
 # Запускаем в фоне с логированием
 nohup centrifugo -c "$PROJECT_DIR/conf/centrifugo.json" > "$PROJECT_DIR/centrifugo.log" 2>&1 &
@@ -41,7 +39,7 @@ python manage.py migrate --noinput
 
 gunicorn project.wsgi:application \
     --bind 0.0.0.0:8030 \
-    --workers 2 \
+    --workers 1 \
     --access-logfile "$PROJECT_DIR/gunicorn_access.log" \
     --error-logfile "$PROJECT_DIR/gunicorn_error.log" \
     --daemon

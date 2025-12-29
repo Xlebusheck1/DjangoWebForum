@@ -5,6 +5,10 @@ function getCookie(name) {
     return value ? decodeURIComponent(value.split("=")[1]) : null;
 }
 
+function getCSRFToken() {
+    return getCookie('csrftoken');
+}
+
 function toggleLike(question_id) {
     const ratingElement = document.getElementById(
         `question-${question_id}-rating`
