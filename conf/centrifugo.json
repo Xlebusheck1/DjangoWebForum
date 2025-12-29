@@ -1,0 +1,44 @@
+{
+  "token_hmac_secret_key": "devguru_secret_key_123",
+  "api_key": "devguru_api_key_456",
+  "admin_password": "admin123",
+  "admin_secret": "admin_secret_789",
+  "admin": true,
+  "allowed_origins": [
+    "http://devguru.local",
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://172.21.0.1",
+    "http://172.16.244.87"
+  ],
+  "allow_subscribe_for_client": true,
+  "allow_publish_for_client": true,
+  "presence": true,
+  "join_leave": true,
+  "history_size": 10,
+  "history_ttl": "300s",
+  "port": 8035,
+  "admin_port": 8036,
+  "prometheus_port": 8037,
+  "health_port": 8038,
+  "client_insecure": true,
+  "engine": "memory",
+  "namespaces": [
+    {
+      "name": "questions",
+      "allow_subscribe_for_client": true,
+      "allow_publish_for_client": true,
+      "allow_history_for_client": true,
+      "history_size": 10,
+      "history_ttl": "300s",
+      "presence": true,
+      "join_leave": true
+    },
+    {
+      "name": "likes",
+      "allow_subscribe_for_client": true,
+      "allow_publish_for_client": true,
+      "allow_history_for_client": false
+    }
+  ]
+}

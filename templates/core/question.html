@@ -142,4 +142,40 @@
     {% include 'sidebar.html' %}
 </div>
 
+<script src="https://unpkg.com/centrifuge@5.1.0/dist/centrifuge.js"></script>
+<script src="{% static 'js/centrifuge.js' %}"></script>
+
+{% if centrifuge_connection_token %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const centrifuge = new CentrifugeClient(
+        "{{ centrifuge_ws_url }}",
+        "{{ centrifuge_connection_token }}"
+    );
+    
+    centrifuge.connect();
+    
+    centrifuge.subscribe("{{ centrifuge_question_channel }}", "{{ centrifuge_question_token }}", {
+        onPublication: function(data) {
+            if (data.type === 'new_answer') {
+                addNewAnswer(data.answer);
+            }
+        }
+    });
+    
+    centrifuge.subscribe("{{ centrifuge_likes_channel }}", "{{ centrifuge_likes_token }}", {
+        onPublication: function(data) {
+            if (data.type === 'question_like') {
+                updateQuestionRating(data.question_id, data.rating);
+            } else if (data.type === 'answer_like') {
+                updateAnswerRating(data.answer_id, data.rating);
+            }
+        }
+    });
+    
+    window.centrifuge = centrifuge;
+});
+</script>
+{% endif %}
+
 {% endblock %}

@@ -16,6 +16,15 @@ ALLOWED_HOSTS = [
     'devguru.local'
 ]
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -23,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'core',
     'rest_framework',
     'drf_spectacular',
@@ -126,3 +136,14 @@ CACHES = {
         "KEY_PREFIX": config.get('redis', 'PREFIX', fallback='DevGuru'),
     }
 }
+
+PROJECT_NAME = 'DevGuru'
+
+CENTRIFUGE_HOST = 'http://localhost:8035'
+CENTRIFUGE_API_KEY = 'devguru_api_key_456'
+CENTRIFUGE_SECRET = 'devguru_secret_key_123'
+CENTRIFUGE_TIMEOUT = 10
+CENTRIFUGE_TOKEN_EXPIRE = 1800
+
+WSGI_APPLICATION = 'project.wsgi.application'
+ASGI_APPLICATION = 'project.asgi.application'

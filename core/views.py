@@ -19,8 +19,16 @@ from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from django.db.models import BooleanField, ExpressionWrapper, Value, Exists, OuterRef
 from core.caches import TagCache
+from .centrifuge_client import CentrifugeClient
+from cent import Client
 User = get_user_model()
 
+def get_centrifuge_client():
+    return Client(
+        settings.CENTRIFUGE_HOST + '/api',
+        api_key=settings.CENTRIFUGE_API_KEY,
+        timeout=10
+    )
 
 # Пересчитывает ранги всех пользователей по их рейтингу.
 def recalculate_user_ranks():
@@ -236,78 +244,65 @@ class TagView(TemplateView):
 
 # Страница отдельного вопроса с ответами и формой добавления ответа.
 class QuestionView(TemplateView):
-    template_name = "core/question.html"
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        is_authenticated = self.request.user.is_authenticated
-        username = self.request.user.username if is_authenticated else ""
         question_id = kwargs.get("question_id")
-
-        try:
-            question_qs = Question.objects.annotate(
-                is_liked=Exists(
-                    QuestionLike.objects.filter(
-                        author=self.request.user,
-                        question_id=OuterRef("pk"),
-                        is_like=True,
-                    )
-                )
+        
+        if self.request.user.is_authenticated:
+            connection_token = CentrifugeClient.generate_connection_token(self.request.user)
+            question_token = CentrifugeClient.generate_token(
+                self.request.user.id, 
+                f"questions:question_{question_id}"
             )
-            question_obj = question_qs.get(id=question_id)
-
-            sort = self.request.GET.get("sort", "best")
-            base_qs = question_obj.answer_set.annotate(
-                likes_count=Count("likes"),
-                is_liked=Exists(
-                    AnswerLike.objects.filter(
-                        author=self.request.user,
-                        answer_id=OuterRef("pk"),
-                        is_like=True,
-                    )
-                ),
+            likes_token = CentrifugeClient.generate_token(
+                self.request.user.id,
+                f"likes:question_{question_id}"
             )
-
-            if sort == "new":
-                answers = base_qs.order_by("-is_correct", "-created_at")
-            else:
-                answers = base_qs.order_by("-is_correct", "-likes_count", "-created_at")
-
-            page_obj = paginate(answers, self.request, 3)
-
-            context.update(
-                {
-                    "question": question_obj,
-                    "answers": page_obj,
-                    "answers_sort": sort,
-                    "is_authenticated": is_authenticated,
-                    "username": username,
-                    "popular_tags": get_popular_tags(),
-                    "answer_form": AnswerForm(),  
-                }
-            )
-        except Question.DoesNotExist:
-            pass
-
+            
+            context.update({
+                "centrifuge_ws_url": "ws://devguru.local:8001/connection/websocket",
+                "centrifuge_connection_token": connection_token,
+                "centrifuge_question_channel": f"questions:question_{question_id}",
+                "centrifuge_question_token": question_token,
+                "centrifuge_likes_channel": f"likes:question_{question_id}",
+                "centrifuge_likes_token": likes_token,
+            })
+        
         return context
-
-    # Обрабатывает отправку формы с новым ответом на вопрос.
+    
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect("login")
 
         question_id = kwargs.get("question_id")
         question = get_object_or_404(Question, id=question_id)
-
         form = AnswerForm(request.POST)
+        
         if form.is_valid():
-            Answer.objects.create(
+            answer = Answer.objects.create(
                 question=question,
                 author=request.user,
                 answer_text=form.cleaned_data["answer_text"],
             )
+            
+            client = get_centrifuge_client()
+            client.publish(
+                channel=f"questions:question_{question_id}",
+                data={
+                    "type": "new_answer",
+                    "answer": {
+                        "id": answer.id,
+                        "author": answer.author.username,
+                        "text": answer.answer_text,
+                        "rating": answer.rating,
+                        "is_correct": answer.is_correct,
+                        "created_at": answer.created_at.isoformat(),
+                    }
+                }
+            )
+            
             return redirect("question", question_id=question_id)
-       
+        
         context = self.get_context_data(question_id=question_id)
         context["answer_form"] = form
         return self.render_to_response(context)
@@ -472,8 +467,6 @@ class SignupView(TemplateView):
 # API‑эндпоинт для лайка/анлайка вопроса.
 @method_decorator(login_required, name='dispatch')
 class QuestionLikeAPIView(View):
-    http_method_names = ['post']
-
     def post(self, request, *args, **kwargs):
         question_id = request.POST.get('pk')        
         is_like = request.POST.get('is_like', 'true') == 'true'
@@ -504,6 +497,18 @@ class QuestionLikeAPIView(View):
                 question.rating -= 1
 
         question.save(update_fields=['rating', 'updated_at'])
+        
+        client = get_centrifuge_client()
+        client.publish(
+            channel=f"likes:question_{question_id}",
+            data={
+                "type": "question_like",
+                "question_id": question_id,
+                "rating": question.rating,
+                "user_id": request.user.id,
+                "is_like": is_like
+            }
+        )
 
         return JsonResponse({
             'success': True,
@@ -514,13 +519,11 @@ class QuestionLikeAPIView(View):
 # API‑эндпоинт для лайка/анлайка ответа.
 @method_decorator(login_required, name="dispatch")
 class AnswerLikeAPIView(View):
-    http_method_names = ["post"]
-
     def post(self, request, *args, **kwargs):
         answer_id = request.POST.get("pk")
         is_like = request.POST.get("is_like", "true") == "true"
-
         answer = get_object_or_404(Answer, pk=answer_id)
+        question_id = answer.question.id
 
         if answer.author == request.user:
             return JsonResponse({"success": False, "error": "Нельзя лайкать свой ответ"}, status=400)
@@ -541,6 +544,20 @@ class AnswerLikeAPIView(View):
                 answer.rating -= 1
 
         answer.save(update_fields=["rating", "updated_at"])
+        
+        client = get_centrifuge_client()
+        client.publish(
+            channel=f"likes:question_{question_id}",
+            data={
+                "type": "answer_like",
+                "answer_id": answer_id,
+                "question_id": question_id,
+                "rating": answer.rating,
+                "user_id": request.user.id,
+                "is_like": is_like
+            }
+        )
+        
         return JsonResponse({"success": True, "rating": answer.rating}, status=200)
     
 
