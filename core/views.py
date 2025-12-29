@@ -513,6 +513,7 @@ class SignupView(TemplateView):
 
 
 # API‑эндпоинт для лайка/анлайка вопроса.
+@method_decorator(csrf_exempt, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class QuestionLikeAPIView(View):
     def post(self, request, *args, **kwargs):        
@@ -552,6 +553,7 @@ class QuestionLikeAPIView(View):
 
 
 # API‑эндпоинт для лайка/анлайка ответа.
+@method_decorator(csrf_exempt, name='dispatch')
 @method_decorator(login_required, name="dispatch")
 class AnswerLikeAPIView(View):
     def post(self, request, *args, **kwargs):
