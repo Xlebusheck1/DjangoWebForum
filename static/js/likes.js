@@ -6,9 +6,7 @@ function getCookie(name) {
 }
 
 function toggleLike(question_id) {
-    const ratingElement = document.getElementById(
-        `question-${question_id}-rating`
-    );
+    const ratingElement = document.getElementById(`question-${question_id}-rating`);
     if (!ratingElement) return;
 
     const btn = document.querySelector(
@@ -56,9 +54,7 @@ function toggleLike(question_id) {
 }
 
 function toggleAnswerLike(answer_id) {
-    const ratingElement = document.getElementById(
-        `answer-${answer_id}-rating`
-    );
+    const ratingElement = document.getElementById(`answer-${answer_id}-rating`);
     if (!ratingElement) return;
 
     const btn = document.querySelector(
@@ -112,9 +108,7 @@ function markCorrectAnswer(answer_id) {
             "X-CSRFToken": getCookie("csrftoken"),
             "X-Requested-With": "XMLHttpRequest",
         },
-        body: new URLSearchParams({
-            pk: answer_id,
-        }),
+        body: new URLSearchParams({ pk: answer_id }),
     })
         .then((res) => res.json())
         .then((data) => {
@@ -125,21 +119,21 @@ function markCorrectAnswer(answer_id) {
         .catch((err) => console.error("mark correct error:", err));
 }
 
-document.addEventListener("DOMContentLoaded", () => {    
+document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".like-answer-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
             const answerId = btn.dataset.answerId;
             toggleAnswerLike(answerId);
         });
     });
-    
+
     document.querySelectorAll(".like-question-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
             const qId = btn.dataset.questionId;
             toggleLike(qId);
         });
     });
-    
+
     document.querySelectorAll(".answer-mark-correct-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
             const answerId = btn.dataset.answerId;
