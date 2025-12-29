@@ -64,19 +64,3 @@ class CentrifugeClient:
         except Exception as e:
             logger.error(f"Failed to publish answer via Centrifugo: {e}")
             return False
-    
-    def publish_like_update(self, question_id, like_data):
-        client = self.get_client()
-        if client is None:
-            return False
-        
-        try:
-            channel = f"likes:question_{question_id}"
-            client.publish(
-                channel=channel,
-                data=like_data
-            )
-            return True
-        except Exception as e:
-            logger.error(f"Failed to publish like via Centrifugo: {e}")
-            return False

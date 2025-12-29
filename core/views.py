@@ -516,7 +516,7 @@ class SignupView(TemplateView):
 @method_decorator(login_required, name='dispatch')
 class QuestionLikeAPIView(View):
     def post(self, request, *args, **kwargs):        
-        question_id = request.POST.get('pk')        
+        question_id = kwargs.get('question_id')  # Из URL, а не из POST
         is_like = request.POST.get('is_like', 'true') == 'true'
         question = get_object_or_404(Question, pk=question_id)
 
@@ -544,19 +544,7 @@ class QuestionLikeAPIView(View):
                 like.delete()
                 question.rating -= 1
 
-        question.save(update_fields=['rating', 'updated_at'])
-        
-        # Используйте CentrifugeClient вместо get_centrifuge_client()
-        from .centrifuge_client import CentrifugeClient
-        centrifuge = CentrifugeClient()
-        centrifuge.publish_like_update(question_id, {
-            "type": "question_like",
-            "question_id": question_id,
-            "rating": question.rating,
-            "user_id": request.user.id,
-            "is_like": is_like
-        })
-
+        question.save(update_fields=['rating', 'updated_at'])      
         return JsonResponse({
             'success': True,
             'rating': question.rating,
@@ -567,7 +555,7 @@ class QuestionLikeAPIView(View):
 @method_decorator(login_required, name="dispatch")
 class AnswerLikeAPIView(View):
     def post(self, request, *args, **kwargs):
-        answer_id = request.POST.get("pk")
+        answer_id = kwargs.get("answer_id")  # Из URL, а не из POST
         is_like = request.POST.get("is_like", "true") == "true"
         answer = get_object_or_404(Answer, pk=answer_id)
         question_id = answer.question.id
@@ -590,20 +578,7 @@ class AnswerLikeAPIView(View):
                 like.delete()
                 answer.rating -= 1
 
-        answer.save(update_fields=["rating", "updated_at"])
-        
-        # Используйте CentrifugeClient вместо get_centrifuge_client()
-        from .centrifuge_client import CentrifugeClient
-        centrifuge = CentrifugeClient()
-        centrifuge.publish_like_update(question_id, {
-            "type": "answer_like",
-            "answer_id": answer_id,
-            "question_id": question_id,
-            "rating": answer.rating,
-            "user_id": request.user.id,
-            "is_like": is_like
-        })
-        
+        answer.save(update_fields=["rating", "updated_at"])        
         return JsonResponse({"success": True, "rating": answer.rating}, status=200)
     
 
@@ -644,16 +619,6 @@ class MarkCorrectAnswerAPIView(View):
         ans_author.save(update_fields=["rating"])
         
         recalculate_user_ranks()
-      
-        from .centrifuge_client import CentrifugeClient
-        centrifuge = CentrifugeClient()
-        centrifuge.publish_like_update(question.id, {
-            "type": "correct_answer",
-            "answer_id": answer_id,
-            "question_id": question.id,
-            "user_id": answer.author.id,
-        })
-
         return JsonResponse({"success": True}, status=200)
     
 

@@ -61,7 +61,7 @@
         <h3 class="answers-section-title">Ответы</h3>
 
         {% for answer in answers %}
-        <div class="answer">
+        <div class="answer" id="answer-{{ answer.id }}">
             <div class="answer-content">
                 <div class="answer-avatar">
                     {% if answer.author.avatar %}
@@ -147,35 +147,97 @@
 
 {% if centrifuge_connection_token %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+const DEFAULT_AVATAR_URL = "{% static 'avatars/default-avatar.png' %}";
+
+function addNewAnswer(answer) {
+    console.log('New answer received:', answer);    
+    
+    const answerHtml = `
+        <div class="answer" id="answer-${answer.id}">
+            <div class="answer-content">
+                <div class="answer-avatar">
+                    <img src="${answer.author.avatar_url || DEFAULT_AVATAR_URL}" alt="avatar">
+                </div>
+                <div class="answer-main">
+                    <div class="answer-text">
+                        <p>${answer.answer_text}</p>
+                    </div>
+                    <div class="answer-meta">
+                        <div class="answer-like-wrapper">
+                            <button type="button" class="like-btn like-answer-btn like-btn--inactive"
+                                data-answer-id="${answer.id}" data-liked="false">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <span class="answer-likes" id="answer-${answer.id}-rating">
+                                ${answer.rating}
+                            </span>
+                        </div>
+                        ${window.currentUserIsQuestionAuthor ? 
+                            `<button type="button" class="answer-mark-correct-btn"
+                                data-answer-id="${answer.id}">
+                                Отметить как правильный
+                            </button>` : ''
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;    
+  
+    const answersSection = document.querySelector('.answers-section');
+    if (answersSection) {
+        const firstAnswer = answersSection.querySelector('.answer');
+        if (firstAnswer) {
+            firstAnswer.insertAdjacentHTML('beforebegin', answerHtml);
+        } else {
+            const yourAnswer = document.querySelector('.your-answer');
+            if (yourAnswer) {
+                yourAnswer.insertAdjacentHTML('beforebegin', answerHtml);
+            }
+        }        
+      
+        setTimeout(() => {
+            if (typeof initLikes === 'function') {
+                initLikes();
+            }
+        }, 100);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {   
+    {% if user.is_authenticated and user == question.author %}
+        window.currentUserIsQuestionAuthor = true;
+    {% else %}
+        window.currentUserIsQuestionAuthor = false;
+    {% endif %}    
+ 
+    if (typeof Centrifuge === 'undefined') {
+        console.error('Centrifuge library not loaded!');
+        return;
+    }
+    
+    console.log('Initializing Centrifuge for answers only...');
+    console.log('WebSocket URL:', "{{ centrifuge_ws_url }}");
+    
     const centrifuge = new CentrifugeClient(
         "{{ centrifuge_ws_url }}",
         "{{ centrifuge_connection_token }}"
     );
     
-    centrifuge.connect();
-    
-    centrifuge.subscribe("{{ centrifuge_question_channel }}", "{{ centrifuge_question_token }}", {
-        onPublication: function(data) {
-            if (data.type === 'new_answer') {
-                addNewAnswer(data.answer);
+    centrifuge.connect();    
+   
+    centrifuge.subscribe("{{ centrifuge_question_channel }}", 
+        "{{ centrifuge_question_token }}", 
+        {
+            onPublication: function(data) {
+                console.log('New answer via Centrifuge:', data);
+                if (data.type === 'new_answer') {
+                    addNewAnswer(data.answer);
+                }
             }
         }
-    });
-    
-    centrifuge.subscribe("{{ centrifuge_likes_channel }}", "{{ centrifuge_likes_token }}", {
-        onPublication: function(data) {
-            if (data.type === 'question_like') {
-                updateQuestionRating(data.question_id, data.rating);
-            } else if (data.type === 'answer_like') {
-                updateAnswerRating(data.answer_id, data.rating);
-            }
-        }
-    });
-    
+    );
     window.centrifuge = centrifuge;
 });
 </script>
 {% endif %}
-
-{% endblock %}

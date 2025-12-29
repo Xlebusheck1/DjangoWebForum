@@ -12,11 +12,15 @@ class CentrifugeClient {
         });
 
         this.client.on('connect', function(ctx) {
-            console.log('Centrifuge connected');
+            console.log('Centrifuge connected', ctx);
         });
 
         this.client.on('disconnect', function(ctx) {
-            console.log('Centrifuge disconnected');
+            console.log('Centrifuge disconnected', ctx);
+        });
+
+        this.client.on('error', function(ctx) {
+            console.error('Centrifuge error', ctx);
         });
 
         this.client.connect();
@@ -27,11 +31,14 @@ class CentrifugeClient {
             return;
         }
 
+        console.log('Subscribing to channel:', channel);
+        
         const sub = this.client.newSubscription(channel, {
             token: token
         });
 
         sub.on('publication', function(ctx) {
+            console.log('Publication received on', channel, ctx.data);
             if (handlers.onPublication) {
                 handlers.onPublication(ctx.data);
             }
@@ -45,12 +52,17 @@ class CentrifugeClient {
             console.log(`Subscribed to ${channel}`);
         });
 
+        sub.on('error', function(ctx) {
+            console.error(`Subscription error on ${channel}`, ctx);
+        });
+
         sub.subscribe();
         this.subscriptions[channel] = sub;
     }
 
     disconnect() {
         if (this.client) {
+            Object.values(this.subscriptions).forEach(sub => sub.unsubscribe());
             this.client.disconnect();
         }
     }
